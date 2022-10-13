@@ -17,6 +17,7 @@ public final class BuildBattle extends JavaPlugin {
         BukkitUtils.instantiate(this);
         BukkitUtils.registerListener(new StreamHandler());
 
+        Game.init();
     }
 
     @Override
