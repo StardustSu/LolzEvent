@@ -15,6 +15,7 @@ public final class BuildBattle extends JavaPlugin {
         instance = this;
 
         BukkitUtils.instantiate(this);
+        BukkitUtils.registerListener(new StreamHandler());
 
     }
 
