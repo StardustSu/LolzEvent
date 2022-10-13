@@ -1,0 +1,7 @@
+name: BuildBattle
+version: '${project.version}'
+main: net.thisisnico.lolz.buildbattle.BuildBattle
+api-version: 1.19
+prefix: BB
+authors: [ deshik91, thisisnico ]
+description: none

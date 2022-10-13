@@ -1,0 +1,7 @@
+name: TntRun
+version: '${project.version}'
+main: net.thisisnico.lolz.tntrun.TntRun
+api-version: 1.19
+prefix: TNT
+authors: [ thisisnico ]
+description: nope
