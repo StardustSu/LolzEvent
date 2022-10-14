@@ -6,6 +6,7 @@ import net.thisisnico.lolz.bukkit.utils.ItemUtil;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.HashSet;
 
@@ -22,6 +23,8 @@ public class Game {
     private static Location spawn;
 
     private static String theme;
+
+    private static boolean isTournament = false;
 
     public static boolean isStarted() {
         return state != GameState.LOBBY;
@@ -87,9 +90,14 @@ public class Game {
         state = GameState.VOTING;
 
         for (Player p : players) {
-            p.setGameMode(GameMode.ADVENTURE);
             p.setFlying(true);
             p.setAllowFlight(true);
+
+            if (isTournament) {
+                p.setGameMode(GameMode.SPECTATOR);
+                continue;
+            }
+            p.setGameMode(GameMode.ADVENTURE);
 
             Inventory i = p.getInventory();
 
