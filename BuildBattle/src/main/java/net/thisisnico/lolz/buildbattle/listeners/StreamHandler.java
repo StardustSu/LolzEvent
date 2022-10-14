@@ -17,6 +17,8 @@ public class StreamHandler implements Listener {
 
     @EventHandler
     void onJoin(PlayerJoinEvent e) {
+        e.getPlayer().getInventory().clear();
+
         if (Game.isStarted() && !Game.isPlayer(e.getPlayer())) {
             e.getPlayer().setGameMode(GameMode.SPECTATOR);
         }
