@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Plot {
+    @Getter
+    private static final int maxHeight = 90;
 
     @Getter
     private final OfflinePlayer owner;

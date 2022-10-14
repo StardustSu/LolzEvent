@@ -30,8 +30,19 @@ public class Game {
     @Getter
     private static final HashSet<Player> players = new HashSet<>();
 
-    @Getter
     private static final HashSet<Plot> plots = new HashSet<>();
+
+    public static Plot getPlot(Player player) {
+        if(!isPlayer(player)) return null;
+        if(!isStarted()) return null;
+
+        for (Plot plot : plots) {
+            if (plot.getOwner().equals(player)) {
+                return plot;
+            }
+        }
+        return null;
+    }
 
     @Getter
     private static Plot currentPlot = null;
