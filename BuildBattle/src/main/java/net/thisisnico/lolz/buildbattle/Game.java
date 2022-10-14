@@ -33,8 +33,8 @@ public class Game {
     private static final HashSet<Plot> plots = new HashSet<>();
 
     public static Plot getPlot(Player player) {
-        if(!isPlayer(player)) return null;
-        if(!isStarted()) return null;
+        if (!isPlayer(player)) return null;
+        if (!isStarted()) return null;
 
         for (Plot plot : plots) {
             if (plot.getOwner().equals(player)) {
@@ -61,7 +61,7 @@ public class Game {
         location.add(0, 0, 50);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (DatabaseAdapter.getUser(player).isAdmin()) {
+            if (isTournament && DatabaseAdapter.getUser(player).isAdmin()) {
                 player.setGameMode(GameMode.SPECTATOR);
                 continue;
             }
@@ -91,12 +91,14 @@ public class Game {
             p.setFlying(true);
             p.setAllowFlight(true);
 
-            p.getInventory().addItem(redVoteItem.getItemStack());
-            p.getInventory().addItem(orangeVoteItem.getItemStack());
-            p.getInventory().addItem(yellowVoteItem.getItemStack());
-            p.getInventory().addItem(limeVoteItem.getItemStack());
-            p.getInventory().addItem(greenVoteItem.getItemStack());
-            p.getInventory().addItem(reportVoteItem.getItemStack());
+            Inventory i = p.getInventory();
+
+            i.addItem(redVoteItem.getItemStack());
+            i.addItem(orangeVoteItem.getItemStack());
+            i.addItem(yellowVoteItem.getItemStack());
+            i.addItem(limeVoteItem.getItemStack());
+            i.addItem(greenVoteItem.getItemStack());
+            i.setItem(8, reportVoteItem.getItemStack());
         }
 
         for (Plot plot : plots) {
@@ -157,7 +159,7 @@ public class Game {
     private static final ClickableItem redVoteItem = ClickableItem.of(ItemUtil.generate(Material.RED_TERRACOTTA, 1, "&c&l1", "&7Click to vote for this plot!"), p -> {
         Game.voteForeCurrentPlot(p, 1);
     });
-    private static final ClickableItem reportVoteItem = ClickableItem.of(ItemUtil.generate(Material.BARRIER, 64, "&c&lCRINGE!", "&7Click to vote for this plot!"), p -> {
+    private static final ClickableItem reportVoteItem = ClickableItem.of(ItemUtil.generate(Material.BARRIER, 1, "&c&lCRINGE!", "&7Click to vote for this plot!"), p -> {
         Game.voteForeCurrentPlot(p, -5);
     });
 
