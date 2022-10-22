@@ -7,6 +7,7 @@ import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 
@@ -81,46 +82,77 @@ public class Game {
             player.setFlying(false);
             player.setHealth(20d);
             player.setFoodLevel(20);
+
+            player.sendMessage("§a§lBuildBattle §7| §aУ вас есть 5 минут на то, чтобы сделать красивую");
+            player.sendMessage("§a§lBuildBattle §7| §a постройку на тему \"" + theme + "\"!");
         }
 
-        Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), Game::startVote, 20 * 60 * 5);
+        Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), Game::startVote, 20 * 30);
+    }
+
+    private static void givePlayerVoteItems(Player p) {
+        p.setGameMode(GameMode.ADVENTURE);
+
+        p.setAllowFlight(true);
+        p.setFlying(true);
+
+        Inventory i = p.getInventory();
+
+        i.clear();
+
+        i.addItem(redVoteItem.getItemStack());
+        i.addItem(orangeVoteItem.getItemStack());
+        i.addItem(yellowVoteItem.getItemStack());
+        i.addItem(limeVoteItem.getItemStack());
+        i.addItem(greenVoteItem.getItemStack());
+        i.setItem(8, reportVoteItem.getItemStack());
     }
 
     private static void startVote() {
         state = GameState.VOTING;
 
-        for (Player p : players) {
-            p.setFlying(true);
-            p.setAllowFlight(true);
-
+        for (Player p : Bukkit.getOnlinePlayers()) {
             if (isTournament) {
-                p.setGameMode(GameMode.SPECTATOR);
+                if (DatabaseAdapter.getUser(p).isAdmin()) givePlayerVoteItems(p);
+                else p.setGameMode(GameMode.SPECTATOR);
                 continue;
             }
-            p.setGameMode(GameMode.ADVENTURE);
 
-            Inventory i = p.getInventory();
-
-            i.addItem(redVoteItem.getItemStack());
-            i.addItem(orangeVoteItem.getItemStack());
-            i.addItem(yellowVoteItem.getItemStack());
-            i.addItem(limeVoteItem.getItemStack());
-            i.addItem(greenVoteItem.getItemStack());
-            i.setItem(8, reportVoteItem.getItemStack());
+            if (players.contains(p)) givePlayerVoteItems(p);
+            else p.setGameMode(GameMode.SPECTATOR);
         }
 
-        for (Plot plot : plots) {
-            Player player = (Player) plot.getOwner();
-            currentPlot = plot;
+        BuildBattle.getLog().info("Vote started!");
+        BuildBattle.getLog().info("Plots count: " + plots.size());
 
-            Bukkit.getScheduler().runTaskTimer(BuildBattle.getInstance(), () -> {
+        var trashPlots = new HashSet<>(plots);
+
+        var plotIter = trashPlots.iterator();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!plotIter.hasNext()) {
+                    BuildBattle.getLog().info("No plots left!");
+                    cancel();
+                    end();
+                    return;
+                }
+
+                var plot = plotIter.next();
+                Player player = (Player) plot.getOwner();
+                currentPlot = plot;
+
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendMessage("§a" + player.getName() + "§7 построил §a" + theme);
+                    p.sendMessage("§a§lBuildBattle §7| §aПостройка игрока " + player.getName());
                     p.teleport(plot.getLocation().clone().add(0, 10, -16));
                 }
-            }, 0, 20 * 20);
-        }
+
+                trashPlots.remove(plot);
+            }
+        }.runTaskTimer(BuildBattle.getInstance(), 0, 20 * 20);
     }
+
 
     public static void end() {
         state = GameState.LOBBY;
