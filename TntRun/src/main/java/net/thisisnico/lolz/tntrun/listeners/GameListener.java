@@ -29,6 +29,11 @@ public class GameListener implements Listener {
             if (!player.getAllowFlight() && !player.getLocation().clone().add(0,-1,0).getBlock().getType().isAir()) {
                 player.setAllowFlight(true);
             } else if (player.isFlying()) {
+                if (Game.isSuppress()) {
+                    player.setAllowFlight(false);
+                    return;
+                }
+                if (Game.getPlayers().get(player).decrementAndGet() <= 0) continue;
                 player.setFlying(false);
                 player.setAllowFlight(false);
                 player.setVelocity(player.getVelocity().multiply(1.4).setY(.8));

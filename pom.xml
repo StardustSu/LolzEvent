@@ -12,6 +12,8 @@
         <module>Common</module>
         <module>BukkitUtils</module>
         <module>TntRun</module>
+        <module>BuildBattle</module>
+        <module>Proxy</module>
     </modules>
 
     <properties>
