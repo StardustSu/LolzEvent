@@ -12,6 +12,7 @@
         <module>Common</module>
         <module>BukkitUtils</module>
         <module>TntRun</module>
+        <module>BuildBattle</module>
     </modules>
 
     <properties>
