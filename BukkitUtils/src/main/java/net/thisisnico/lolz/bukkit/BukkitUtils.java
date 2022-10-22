@@ -11,6 +11,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import lombok.Getter;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.thisisnico.lolz.bukkit.commands.DebugCommand;
 import net.thisisnico.lolz.bukkit.handlers.SystemHandler;
 import net.thisisnico.lolz.bukkit.utils.ScoreboardUtils;
 import org.bukkit.command.CommandSender;
@@ -103,9 +104,11 @@ public class BukkitUtils {
                                 .append(text(") ", NamedTextColor.GRAY))
                                 .append(component).build()
                 ).apply(commandManager, c -> c);
+
+        annotationParser.parse(new DebugCommand());
     }
 
-    public static void registerCommand(Object command) {
+    public static <T> void registerCommand(final T command) {
         annotationParser.parse(command);
     }
 
