@@ -1,0 +1,6 @@
+name: BedWars
+version: '${project.version}'
+main: net.thisisnico.lolz.bedwars.BedWars
+api-version: 1.19
+authors: [ dehskik191, drhtinsinoco ]
+description: none
