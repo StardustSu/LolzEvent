@@ -1,6 +1,5 @@
 package net.thisisnico.lolz.bedwars;
 
-import net.thisisnico.lolz.bedwars.listeners.GameHandler;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,11 +11,7 @@ public final class BedWars extends JavaPlugin {
 
         BukkitUtils.instantiate(this);
 
-        // To get instance:
-        // BukkitUtils.getPlugin()
-
-        BukkitUtils.registerListener(new GameHandler());
-
+        Game.init();
     }
 
     @Override
