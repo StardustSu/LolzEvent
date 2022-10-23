@@ -20,7 +20,10 @@ public class Clan {
     @Getter @Setter
     private ArrayList<String> members = new ArrayList<>();
 
-    @Getter
+    @Getter @Setter
+    private ArrayList<String> invites = new ArrayList<>();
+
+    @Getter @Setter
     private int points = 0;
 
     public void givePoints(int points) {
@@ -33,12 +36,6 @@ public class Clan {
         this.points -= points;
         save();
         Sync.sendPointsUpdate(this, -points);
-    }
-
-    public void setPoints(int points) {
-        Sync.sendPointsUpdate(this, this.points - points);
-        this.points = points;
-        save();
     }
 
     public void save() {

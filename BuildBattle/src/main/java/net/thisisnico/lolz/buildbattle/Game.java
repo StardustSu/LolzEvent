@@ -1,7 +1,9 @@
 package net.thisisnico.lolz.buildbattle;
 
 import lombok.Getter;
+import net.kyori.adventure.title.Title;
 import net.thisisnico.lolz.bukkit.utils.ClickableItem;
+import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import org.bukkit.*;
@@ -83,8 +85,10 @@ public class Game {
             player.setHealth(20d);
             player.setFoodLevel(20);
 
-            player.sendMessage("§a§lBuildBattle §7| §aУ вас есть 5 минут на то, чтобы сделать красивую");
-            player.sendMessage("§a§lBuildBattle §7| §a постройку на тему \"" + theme + "\"!");
+            player.sendMessage("§a§lBuildBattle §7| §aУ вас есть 5 минут на то, чтобы сделать");
+            player.sendMessage("§a§lBuildBattle §7| §aкрасивую постройку на тему \"" + theme + "\"!");
+
+            player.showTitle(Title.title(Component.color("&a"+theme), Component.color("&eУ вас есть 5 минут на постройку!")));
         }
 
         Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), Game::startVote, 20 * 30);
@@ -179,34 +183,32 @@ public class Game {
         return players.contains(p);
     }
 
-    public static boolean isSpectator(Player p) {
-        return !isPlayer(p);
-    }
-
     // Voting items
     private static final ClickableItem greenVoteItem = ClickableItem.of(ItemUtil.generate(Material.GREEN_TERRACOTTA, 5, "&a&l5", "&7Click to vote for this plot!"), p -> {
-        Game.voteForeCurrentPlot(p, 5);
+        Game.voteForCurrentPlot(p, 5);
     });
     private static final ClickableItem limeVoteItem = ClickableItem.of(ItemUtil.generate(Material.LIME_TERRACOTTA, 4, "&a&l4", "&7Click to vote for this plot!"), p -> {
-        Game.voteForeCurrentPlot(p, 4);
+        Game.voteForCurrentPlot(p, 4);
     });
     private static final ClickableItem yellowVoteItem = ClickableItem.of(ItemUtil.generate(Material.YELLOW_TERRACOTTA, 3, "&e&l3", "&7Click to vote for this plot!"), p -> {
-        Game.voteForeCurrentPlot(p, 3);
+        Game.voteForCurrentPlot(p, 3);
     });
     private static final ClickableItem orangeVoteItem = ClickableItem.of(ItemUtil.generate(Material.ORANGE_TERRACOTTA, 2, "&6&l2", "&7Click to vote for this plot!"), p -> {
-        Game.voteForeCurrentPlot(p, 2);
+        Game.voteForCurrentPlot(p, 2);
     });
     private static final ClickableItem redVoteItem = ClickableItem.of(ItemUtil.generate(Material.RED_TERRACOTTA, 1, "&c&l1", "&7Click to vote for this plot!"), p -> {
-        Game.voteForeCurrentPlot(p, 1);
+        Game.voteForCurrentPlot(p, 1);
     });
     private static final ClickableItem reportVoteItem = ClickableItem.of(ItemUtil.generate(Material.BARRIER, 1, "&c&lCRINGE!", "&7Click to vote for this plot!"), p -> {
-        Game.voteForeCurrentPlot(p, -5);
+        Game.voteForCurrentPlot(p, -5);
     });
 
-    private static void voteForeCurrentPlot(Player player, int score) {
+    private static void voteForCurrentPlot(Player player, int score) {
         if (score < -10 || score > 5) return;
         if (currentPlot == null) return;
         currentPlot.addVote(player, score);
+        if (score < 0) player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, .1f);
+        else player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, score/5f);
     }
 
 }
