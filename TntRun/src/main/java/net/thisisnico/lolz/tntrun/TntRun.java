@@ -19,12 +19,13 @@ public final class TntRun extends JavaPlugin {
 
         BukkitUtils.instantiate(this);
 
+        Game.init();
+
         BukkitUtils.registerListener(new GameListener());
         BukkitUtils.registerListener(new StreamHandler());
 
         BukkitUtils.getAnnotationParser().parse(new TestCommand());
 
-        Game.init();
     }
 
     @Override

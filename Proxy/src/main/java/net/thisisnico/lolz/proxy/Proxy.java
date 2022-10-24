@@ -14,7 +14,9 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
@@ -22,9 +24,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.thisisnico.lolz.common.network.Sync;
 import net.thisisnico.lolz.proxy.commands.ClanCommand;
+import net.thisisnico.lolz.proxy.commands.WhitelistCommand;
 import org.slf4j.Logger;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -40,11 +44,23 @@ import static net.kyori.adventure.text.Component.text;
 )
 public class Proxy {
 
-    @Inject
-    private Logger logger;
+    @Getter
+    private static Proxy instance;
+
+    private final Logger logger;
+
+    @Getter
+    private final ProxyServer server;
+
+    private final Path dataDirectory;
 
     @Inject
-    private ProxyServer server;
+    public Proxy(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+        instance = this;
+        this.server = server;
+        this.logger = logger;
+        this.dataDirectory = dataDirectory;
+    }
 
     @Getter
     private static VelocityCommandManager<Player> commandManager;
@@ -63,7 +79,7 @@ public class Proxy {
 
         registerCommandManager();
 
-        Sync.registerPointsUpdate((clan, delta) -> {
+        Sync.registerPointsUpdateAsync((clan, delta) -> {
             logger.info("Received points update for clan " + clan.getTag() + " with delta " + delta);
 
             var s = String.valueOf(delta);
@@ -73,54 +89,86 @@ public class Proxy {
                 var player = server.getPlayer(member).orElse(null);
                 if (player == null) continue;
 
-                player.sendMessage(Component.text("§6" + s + " очков!"));
+                player.sendMessage(Component.text("§6" + s + " очков команды!"));
             }
         });
 
+        logger.info("Started Points listener");
+
         annotationParser.parse(new ClanCommand());
-
-        banwords.add("пидор");
-        banwords.add("pidor");
-        banwords.add("пидар");
-        banwords.add("pidar");
-        banwords.add("пидоp");
-        banwords.add("рidor");
-
-        banwords.add("nigg");
-        banwords.add("niger");
-        banwords.add("negr");
-        banwords.add("негр");
-        banwords.add("нигг");
-
-        banwords.add("симп");
-        banwords.add("simp");
-        banwords.add("cимп");
-        banwords.add("simр");
+        annotationParser.parse(new WhitelistCommand());
 
         try {
-            var file = new File("/home/container/_banwords.txt");
+            var file = new File(dataDirectory.toFile(), "_banlist.txt");
+            //noinspection ResultOfMethodCallIgnored
+            file.getParentFile().mkdirs();
             if (!file.exists()) //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
 
             try (var stream = new BufferedReader(new FileReader(file))) {
-                var line = stream.readLine();
-                if (!banwords.contains(line)) banwords.add(line);
+                stream.lines().forEach(banwords::add);
             }
+
+            logger.info("Loaded ban word list");
 
         } catch (IOException ignored) {}
 
         try {
-            var file = new File("/home/container/_whitelist.txt");
+            var file = new File(dataDirectory.toFile(), "_whitelist.txt");
+            //noinspection ResultOfMethodCallIgnored
+            file.getParentFile().mkdirs();
             if (!file.exists()) //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
 
             try (var stream = new BufferedReader(new FileReader(file))) {
-                var line = stream.readLine();
-                if (!whitelist.contains(line)) whitelist.add(line);
+                stream.lines().forEach(whitelist::add);
             }
+
+            logger.info("Loaded whitelist");
 
         } catch (IOException ignored) {}
 
+    }
+
+    @Subscribe
+    public void onShutdown(ProxyShutdownEvent e) {
+        logger.info("Saving and shutting down");
+
+        try {
+            var file = new File(dataDirectory.toFile(), "_banlist.txt");
+            //noinspection ResultOfMethodCallIgnored
+            file.getParentFile().mkdirs();
+            if (!file.exists()) //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
+
+            try (var stream = new BufferedWriter(new FileWriter(file))) {
+                for (String word : banwords) {
+                    stream.write(word + "\n");
+                }
+            }
+
+            logger.info("Saved ban word list");
+
+        } catch (IOException ignored) {}
+
+        try {
+            var file = new File(dataDirectory.toFile(), "_whitelist.txt");
+            //noinspection ResultOfMethodCallIgnored
+            file.getParentFile().mkdirs();
+            if (!file.exists()) //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
+
+            try (var stream = new BufferedWriter(new FileWriter(file))) {
+                for (String word : whitelist) {
+                    stream.write(word + "\n");
+                }
+            }
+
+            logger.info("Saved whitelist");
+
+        } catch (IOException ignored) {}
+
+        logger.info("Goodbye!");
     }
 
     @Subscribe
@@ -129,32 +177,31 @@ public class Proxy {
 
         if (message.startsWith("/")) return;
 
-        var nigger = message + "";
+        var check = message
+                .replaceAll("\\s", "")
+                .replaceAll("a", "а")
+                .replaceAll("o", "о")
+                .replaceAll("c", "с")
+                .replaceAll("p", "р")
+                .replaceAll("e", "е")
+                .replaceAll("x", "х")
+                .replaceAll("b", "в")
+                .replaceAll("t", "т")
+                .replaceAll("ь", "b")
+                .replaceAll("h", "н")
+                .replaceAll("n", "п")
+                .replaceAll("m", "м");
 
-        var words = message.toLowerCase().split("\\s+");
-        for (String word : words) {
-            for (String banword : banwords) {
-                var check = word
-                        .replaceAll("a", "а")
-                        .replaceAll("o", "о")
-                        .replaceAll("c", "с")
-                        .replaceAll("p", "р")
-                        .replaceAll("e", "е")
-                        .replaceAll("x", "х")
-                        .replaceAll("b", "в")
-                        .replaceAll("t", "т")
-                        .replaceAll("ь", "b")
-                        .replaceAll("h", "н")
-                        .replaceAll("n", "п")
-                        .replaceAll("m", "м");
-                if (check.contains(banword.toLowerCase())) {
-                    nigger = message.replace(word, "*".repeat(word.length()));
-                    break;
-                }
+        for (String banword : banwords) {
+            if (banword == null) continue;
+
+            if (check.contains(banword.toLowerCase())) {
+                message = "I'm so fancy you wouldn't even believe it. love you <3";
+                break;
             }
         }
 
-        e.setResult(PlayerChatEvent.ChatResult.message(nigger));
+        e.setResult(PlayerChatEvent.ChatResult.message(message));
     }
 
     @Subscribe

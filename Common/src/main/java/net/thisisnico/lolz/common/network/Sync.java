@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 
 public class Sync {
 
-    private static final Jedis redis = new Jedis();
+    private static final Jedis redis = new Jedis("localhost", 6379, 0);
 
     public static void sendPointsUpdate(Clan clan, int delta) {
         redis.publish("lolz:points", clan.getTag() + ":" + delta);
@@ -27,6 +27,10 @@ public class Sync {
 
             }
         }, "lolz:points");
+    }
+
+    public static void registerPointsUpdateAsync(BiConsumer<Clan, Integer> callback) {
+        new Thread(() -> registerPointsUpdate(callback)).start();
     }
 
 }
