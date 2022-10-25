@@ -1,13 +1,18 @@
 package net.thisisnico.lolz.bedwars.listeners;
 
+import net.thisisnico.lolz.bedwars.BedWars;
 import net.thisisnico.lolz.bedwars.Game;
+import net.thisisnico.lolz.bedwars.classes.Team;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -26,6 +31,39 @@ public class GameHandler implements Listener {
         }
 
         // TODO: Add check for destroying block, which can not be placed by player
+    }
+
+    @EventHandler
+    private void onPlayerFellIntoVoid(PlayerDeathEvent event) {
+        final int RESPAWN_DELAY = 5;
+
+        event.setCancelled(true);
+
+        event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
+        Team team = Game.getTeam(event.getPlayer());
+
+        if (team == null)
+            return;
+
+        event.getPlayer().getInventory().clear();
+        event.getPlayer().setGameMode(GameMode.ADVENTURE);
+        event.getPlayer().setAllowFlight(true);
+        event.getPlayer().setFlying(true);
+
+        if (team.isBedDestroyed()) {
+            if(event.getPlayer().getKiller() != null) {
+                Game.getTeam(event.getPlayer().getKiller()).addFinalKill();
+            }
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskLater(BedWars.getInstance(), () -> {
+            event.getPlayer().teleport(team.getSpawnLocation());
+            Game.givePlayerStartItems(event.getPlayer(), team);
+            event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            event.getPlayer().setAllowFlight(false);
+            event.getPlayer().setFlying(false);
+        }, RESPAWN_DELAY);
     }
 
     @EventHandler

@@ -23,7 +23,7 @@ public class Team {
     private Location spawnLocation;
 
     @Getter
-    private int allivePlayers = players.size();
+    private int alivePlayers = players.size();
 
     // Надбавка баллов за:
     private int bedsDestroyed = 0; // Уничтожения кроватей

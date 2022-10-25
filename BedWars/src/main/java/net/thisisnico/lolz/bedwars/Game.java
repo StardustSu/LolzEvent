@@ -76,24 +76,37 @@ public class Game {
         for (Team team : teams) {
             for (Player player : team.getPlayers()) {
                 player.teleport(team.getSpawnLocation());
-                player.getInventory().clear();
-
-                player.getInventory().setHelmet(new ItemStack(Material.LEATHER_HELMET));
-                player.getInventory().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
-                player.getInventory().setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
-                player.getInventory().setBoots(new ItemStack(Material.LEATHER_BOOTS));
-
-                ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getHelmet()).getItemMeta()).setColor(team.getColor());
-                ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getChestplate()).getItemMeta()).setColor(team.getColor());
-                ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getLeggings()).getItemMeta()).setColor(team.getColor());
-                ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getBoots()).getItemMeta()).setColor(team.getColor());
+                givePlayerStartItems(player, team);
             }
         }
 
         isRunning = true;
     }
 
+    public static void givePlayerStartItems(Player player, Team team){
+        player.getInventory().clear();
+
+        player.getInventory().setHelmet(new ItemStack(Material.LEATHER_HELMET));
+        player.getInventory().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+        player.getInventory().setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+        player.getInventory().setBoots(new ItemStack(Material.LEATHER_BOOTS));
+
+        ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getHelmet()).getItemMeta()).setColor(team.getColor());
+        ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getChestplate()).getItemMeta()).setColor(team.getColor());
+        ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getLeggings()).getItemMeta()).setColor(team.getColor());
+        ((LeatherArmorMeta) Objects.requireNonNull(player.getInventory().getBoots()).getItemMeta()).setColor(team.getColor());
+    }
+
     public static void stop() {
         isRunning = false;
+    }
+
+    public static Team getTeam(Player player) {
+        for (Team team : teams) {
+            if (team.getPlayers().contains(player)) {
+                return team;
+            }
+        }
+        return null;
     }
 }
