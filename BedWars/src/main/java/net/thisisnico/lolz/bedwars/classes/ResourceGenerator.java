@@ -1,5 +1,6 @@
 package net.thisisnico.lolz.bedwars.classes;
 
+import lombok.Getter;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -9,7 +10,11 @@ import org.bukkit.scheduler.BukkitTask;
 public class ResourceGenerator {
 
     private final Arena arena;
+
+    @Getter
     private final Location location;
+
+    @Getter
     private final ItemStack resource;
     private final BukkitTask task;
 

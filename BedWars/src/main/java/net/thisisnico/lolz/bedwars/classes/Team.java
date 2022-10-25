@@ -1,8 +1,10 @@
 package net.thisisnico.lolz.bedwars.classes;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -14,20 +16,20 @@ public class Team {
     private Color color;
 
     @Getter
-    private ArrayList<Player> players = new ArrayList<>();
+    private final ArrayList<Player> players = new ArrayList<>();
     @Getter
     private boolean isBedDestroyed = false;
+
+    @Getter @Setter
+    private OfflinePlayer coolDudeWhoBrokeDaBed;
     @Getter
     private Location bedLocation;
     @Getter
     private Location spawnLocation;
 
-    @Getter
-    private int alivePlayers = players.size();
-
-    // Надбавка баллов за:
-    private int bedsDestroyed = 0; // Уничтожения кроватей
-    private int playersFinalKilled = 0; // Финальные убийства игроков
+//    // Надбавка баллов за:
+//    private int bedsDestroyed = 0; // Уничтожения кроватей
+//    private int playersFinalKilled = 0; // Финальные убийства игроков
 
     public void addPlayer(Player player) {
         players.add(player);
@@ -59,17 +61,17 @@ public class Team {
         return checkBedLocation(x - 1, y, z);
     }
 
-    public void addFinalKill() {
-        playersFinalKilled++;
-    }
-
-    public void addBedsDestroyed() {
-        bedsDestroyed++;
-    }
-
-    public int getPointsCount() {
-        final int pointsPerBed = 5;
-        final int pointsPerFinalKill = 3;
-        return bedsDestroyed * pointsPerBed + playersFinalKilled * pointsPerFinalKill;
-    }
+//    public void addFinalKill() {
+//        playersFinalKilled++;
+//    }
+//
+//    public void addBedsDestroyed() {
+//        bedsDestroyed++;
+//    }
+//
+//    public int getPointsCount() {
+//        final int pointsPerBed = 5;
+//        final int pointsPerFinalKill = 3;
+//        return bedsDestroyed * pointsPerBed + playersFinalKilled * pointsPerFinalKill;
+//    }
 }
