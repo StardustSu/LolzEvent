@@ -10,7 +10,7 @@ public class ShopMenu extends InventoryMenu {
         super("", 1, true);
 
         addItem(ItemUtil.generate(Material.DIAMOND_BLOCK, 1, "&fgovno"), _p -> {
-            // executor
+            // action
         });
 
         open(p);

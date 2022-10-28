@@ -17,6 +17,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>space-maven</id>
+            <url>https://maven.pkg.jetbrains.space/stardustproj/p/sd/maven</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>

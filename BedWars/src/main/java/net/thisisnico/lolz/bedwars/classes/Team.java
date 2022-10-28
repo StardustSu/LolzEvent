@@ -2,18 +2,20 @@ package net.thisisnico.lolz.bedwars.classes;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Color;
+import net.thisisnico.lolz.bedwars.Game;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
 public class Team {
+
     @Getter
-    private final String name = "Test name";
+    private final String name;
     @Getter
-    private Color color;
+    private final TeamColor color;
 
     @Getter
     private final ArrayList<Player> players = new ArrayList<>();
@@ -26,6 +28,24 @@ public class Team {
     private Location bedLocation;
     @Getter
     private Location spawnLocation;
+
+    public Team(String name) {
+        this.name = name;
+        var color = TeamColor.getRandomColor();
+        this.color = color;
+        for (ArmorStand entity : Game.getArena().getWorld().getEntitiesByClass(ArmorStand.class)) {
+            if (entity.getScoreboardTags().contains(color.name().toLowerCase()+"_spawn")) {
+                this.spawnLocation = entity.getLocation();
+                break;
+            }
+        }
+        for (ArmorStand entity : Game.getArena().getWorld().getEntitiesByClass(ArmorStand.class)) {
+            if (entity.getScoreboardTags().contains(color.name().toLowerCase()+"_bed")) {
+                this.bedLocation = entity.getLocation();
+                break;
+            }
+        }
+    }
 
 //    // Надбавка баллов за:
 //    private int bedsDestroyed = 0; // Уничтожения кроватей

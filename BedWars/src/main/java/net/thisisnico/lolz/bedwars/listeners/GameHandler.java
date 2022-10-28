@@ -1,6 +1,5 @@
 package net.thisisnico.lolz.bedwars.listeners;
 
-import net.kyori.adventure.title.Title;
 import net.thisisnico.lolz.bedwars.Const;
 import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bedwars.classes.ResourceGenerator;
@@ -22,8 +21,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.time.Duration;
-
 public class GameHandler implements Listener {
 
     @EventHandler
@@ -38,21 +35,21 @@ public class GameHandler implements Listener {
             }
         }
 
-        if (!Game.getPlayerBlocks().contains(event.getBlock())) {
+        if (!Game.getArena().getPlayerBlocks().contains(event.getBlock())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     private void onPlayerDieLikeASuckerWhatANerdBitchShitFuckHimHisMumIsStupidNobodyLikedHimAnyways(PlayerDeathEvent event) {
-        // TODO. Death messages
         event.setCancelled(true);
 
         event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
         Team team = Game.getTeam(event.getPlayer());
 
-        if (team == null)
-            return;
+        if (team == null) return;
+        Bukkit.broadcast(Component.color(event.getPlayer().getName()).color(team.getColor().getColor())
+                .append(Component.color(" &7умер")));
 
         event.getPlayer().getInventory().clear();
         event.getPlayer().setGameMode(GameMode.ADVENTURE);
@@ -90,13 +87,11 @@ public class GameHandler implements Listener {
                 event.getPlayer().setGameMode(GameMode.SURVIVAL);
                 event.getPlayer().setAllowFlight(false);
                 event.getPlayer().setFlying(false);
-                event.getPlayer().showTitle(Title.title(Component.color("&cВ бой!"), Component.color("&f"),
-                        Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
+//                event.getPlayer().showTitle(Title.title(Component.color("&cВ бой!"), Component.color("&f"), Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
                 task.cancel();
             } else {
-//                event.getPlayer().sendActionBar(Component.color("&cRespawn in " + i[0] + " seconds"));
-                event.getPlayer().showTitle(Title.title(Component.color("&c"+i[0]), Component.color("&aдо возрождения"),
-                        Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
+                event.getPlayer().sendActionBar(Component.color("&cРеспавн через " + i[0] + " сек"));
+//                event.getPlayer().showTitle(Title.title(Component.color("&c"+i[0]), Component.color("&aдо возрождения"), Title.Times.times(Duration.ZERO, Duration.ofMillis(1500), Duration.ZERO)));
                 i[0]--;
             }
         }, 0L, 20L);
@@ -124,7 +119,7 @@ public class GameHandler implements Listener {
             }
         }
 
-        Game.getPlayerBlocks().add(event.getBlockPlaced());
+        Game.getArena().getPlayerBlocks().add(event.getBlockPlaced());
 
     }
 

@@ -4,20 +4,20 @@ import lombok.Getter;
 import net.thisisnico.lolz.bedwars.classes.Arena;
 import net.thisisnico.lolz.bedwars.classes.ResourceGenerator;
 import net.thisisnico.lolz.bedwars.classes.Team;
+import net.thisisnico.lolz.bedwars.classes.TeamColor;
 import net.thisisnico.lolz.bedwars.listeners.GameHandler;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
+import net.thisisnico.lolz.common.database.Clan;
+import net.thisisnico.lolz.common.database.Database;
+import net.thisisnico.lolz.common.database.User;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Game {
 
@@ -30,11 +30,9 @@ public class Game {
     @Getter
     private static final ArrayList<ResourceGenerator> generators = new ArrayList<>();
 
-    @Getter
-    private static final HashSet<Block> playerBlocks = new HashSet<>();
-
     private static boolean isRunning = false;
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isRunning() {
         return isRunning;
     }
@@ -49,15 +47,7 @@ public class Game {
     }
 
     private static void broadcast(String message) {
-//        for (Team team : teams) {
-//            for (Player player : team.getPlayers()) {
-//                player.sendMessage(message);
-//            }
-//        }
-
-        Bukkit.getServer().forEachAudience(au -> {
-            au.sendMessage(Component.color(message));
-        });
+        Bukkit.getServer().forEachAudience(au -> au.sendMessage(Component.color(message)));
     }
 
     public static boolean destroyBed(Location l, Player p) {
@@ -86,13 +76,52 @@ public class Game {
         BukkitUtils.registerListener(new GameHandler());
 
         arena = new Arena(BukkitUtils.getPlugin().getServer().getWorlds().get(0));
+    }
 
-        // TODO. Load arena
+    public static void startTimer() {
+        final int[] i = {10};
+        Bukkit.getScheduler().runTaskTimer(BukkitUtils.getPlugin(), task -> {
+            if (i[0] == 0) {
+                start();
+                task.cancel();
+            } else {
+                broadcast("&aИгра начнется через &c" + i[0] + " секунд!");
+                if (i[0] < 6) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_HAT, 1f, .5f);
+                    }
+                }
+            }
+            i[0]--;
+        }, 0, 20);
     }
 
     public static void start() {
+        var clans = new ArrayList<Clan>();
+        Database.getClans().find().forEach(clans::add);
 
-        // TODO. Sort players in teams
+        var users = new ArrayList<User>();
+        Database.getUsers().find().forEach(users::add);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            var user = users.stream().filter(u -> u.getName().equalsIgnoreCase(player.getName())).findFirst().orElse(null);
+            assert user != null;
+            Clan clan = null;
+            if (user.hasClan()) clan = clans.stream().filter(c -> c.getTag().equalsIgnoreCase(user.getClan())).findFirst().orElse(null);
+            if (clan == null) {
+                player.kick(Component.color("&cТы не в клане"));
+                continue;
+            }
+
+            Clan finalClan = clan;
+            var team = teams.stream().filter(t -> t.getName().equalsIgnoreCase(finalClan.getTag())).findFirst().orElse(null);
+            if (team == null) {
+                team = new Team(clan.getTag());
+                teams.add(team);
+            }
+
+            team.addPlayer(player);
+        }
 
         for (Team team : teams) {
             for (Player player : team.getPlayers()) {
@@ -106,34 +135,37 @@ public class Game {
 
     public static void givePlayerStartItems(Player player, Team team) {
         player.getInventory().clear();
-
+        var color = Color.fromRGB(team.getColor().getColor().red(), team.getColor().getColor().green(), team.getColor().getColor().blue());
         var is = new ItemStack(Material.LEATHER_HELMET);
         var meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(team.getColor());
+        meta.setColor(color);
         is.setItemMeta(meta);
         player.getInventory().setHelmet(is);
 
         is = new ItemStack(Material.LEATHER_CHESTPLATE);
         meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(team.getColor());
+        meta.setColor(color);
         is.setItemMeta(meta);
         player.getInventory().setChestplate(is);
 
         is = new ItemStack(Material.LEATHER_LEGGINGS);
         meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(team.getColor());
+        meta.setColor(color);
         is.setItemMeta(meta);
         player.getInventory().setLeggings(is);
 
         is = new ItemStack(Material.LEATHER_BOOTS);
         meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(team.getColor());
+        meta.setColor(color);
         is.setItemMeta(meta);
         player.getInventory().setBoots(is);
     }
 
     public static void stop() {
         isRunning = false;
+        TeamColor.clearTakenColors();
+
+        // TODO. end da game
     }
 
     public static Team getTeam(Player player) {
