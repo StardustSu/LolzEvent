@@ -135,6 +135,8 @@ public class Game {
                 continue;
             }
 
+            player.setFoodLevel(20);
+
             Clan finalClan = clan;
             var team = teams.stream().filter(t -> t.getName().equalsIgnoreCase(finalClan.getTag())).findFirst().orElse(null);
             if (team == null) {
