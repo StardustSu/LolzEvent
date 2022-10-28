@@ -13,6 +13,9 @@ import net.thisisnico.lolz.common.database.Clan;
 import net.thisisnico.lolz.common.database.Database;
 import net.thisisnico.lolz.common.database.User;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -131,6 +134,26 @@ public class Game {
         }
 
         isRunning = true;
+    }
+
+    public static void dispose() {
+        for (Team team : teams) {
+            for (Player player : team.getPlayers()) {
+                player.teleport(arena.getWorld().getSpawnLocation());
+            }
+        }
+        teams.clear();
+        for (ResourceGenerator generator : generators) {
+            generator.getHologram().remove();
+        }
+        for (Block playerBlock : arena.getPlayerBlocks()) {
+            playerBlock.setType(Material.AIR);
+        }
+        for (Entity entity : arena.getWorld().getEntities()) {
+            if (entity instanceof ArmorStand) {
+                entity.remove();
+            }
+        }
     }
 
     public static void givePlayerStartItems(Player player, Team team) {
