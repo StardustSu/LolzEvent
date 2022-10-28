@@ -5,7 +5,6 @@ import net.thisisnico.lolz.bedwars.classes.Arena;
 import net.thisisnico.lolz.bedwars.classes.ResourceGenerator;
 import net.thisisnico.lolz.bedwars.classes.Team;
 import net.thisisnico.lolz.bedwars.classes.TeamColor;
-import net.thisisnico.lolz.bedwars.listeners.GameHandler;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
@@ -76,9 +75,28 @@ public class Game {
     }
 
     public static void init() {
-        BukkitUtils.registerListener(new GameHandler());
-
+        for (ResourceGenerator generator : generators) {
+            generator.dispose();
+        }
+        generators.clear();
         arena = new Arena(BukkitUtils.getPlugin().getServer().getWorlds().get(0));
+
+        for (ArmorStand entity : arena.getWorld().getEntitiesByClass(ArmorStand.class)) {
+            for (String tag : entity.getScoreboardTags()) {
+                if (tag.startsWith("generator_")) {
+                    var seconds = Integer.parseInt(tag.split("_")[1]);
+                    var block = entity.getLocation().getBlock().getRelative(0,-1,0);
+                    generators.add(new ResourceGenerator(entity.getLocation(), new ItemStack(switch (block.getType()) {
+                        case BRICKS -> Material.BRICK;
+                        case IRON_BLOCK -> Material.IRON_INGOT;
+                        case GOLD_BLOCK -> Material.GOLD_INGOT;
+                        case EMERALD_BLOCK -> Material.EMERALD;
+                        case DIAMOND_BLOCK -> Material.DIAMOND;
+                        default -> Material.FEATHER;
+                    }, 1), seconds));
+                }
+            }
+        }
     }
 
     public static void startTimer() {
@@ -100,6 +118,7 @@ public class Game {
     }
 
     public static void start() {
+        if (isRunning) return;
         var clans = new ArrayList<Clan>();
         Database.getClans().find().forEach(clans::add);
 

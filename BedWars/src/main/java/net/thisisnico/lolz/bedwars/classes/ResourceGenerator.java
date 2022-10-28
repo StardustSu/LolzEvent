@@ -1,6 +1,7 @@
 package net.thisisnico.lolz.bedwars.classes;
 
 import lombok.Getter;
+import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import org.bukkit.Location;
@@ -10,8 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 public class ResourceGenerator {
-
-    private final Arena arena;
 
     @Getter
     private final Location location;
@@ -25,13 +24,13 @@ public class ResourceGenerator {
     /**
      * Creates basic generator
      */
-    public ResourceGenerator(Arena arena, Location location, ItemStack resource, int seconds) {
-        this.arena = arena;
+    public ResourceGenerator(Location location, ItemStack resource, int seconds) {
         this.location = location;
         this.resource = resource;
         task = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!Game.isRunning()) return;
                 location.getWorld().dropItem(location, resource);
             }
         }.runTaskTimer(BukkitUtils.getPlugin(), 0, seconds * 20L);
@@ -44,4 +43,7 @@ public class ResourceGenerator {
         hologram.addScoreboardTag("generator");
     }
 
+    public void dispose() {
+        task.cancel();
+    }
 }

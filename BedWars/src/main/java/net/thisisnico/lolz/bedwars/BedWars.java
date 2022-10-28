@@ -1,6 +1,9 @@
 package net.thisisnico.lolz.bedwars;
 
 import lombok.Getter;
+import net.thisisnico.lolz.bedwars.commands.ReloadArenaCommand;
+import net.thisisnico.lolz.bedwars.commands.StartGameCommand;
+import net.thisisnico.lolz.bedwars.listeners.GameHandler;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +16,10 @@ public final class BedWars extends JavaPlugin {
     public void onEnable() {
         BukkitUtils.instantiate(this);
         instance = this;
+        BukkitUtils.registerListener(new GameHandler());
         Game.init();
+        BukkitUtils.registerCommand(new ReloadArenaCommand());
+        BukkitUtils.registerCommand(new StartGameCommand());
     }
 
     @Override
