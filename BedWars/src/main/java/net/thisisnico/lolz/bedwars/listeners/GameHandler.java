@@ -96,7 +96,7 @@ public class GameHandler implements Listener {
             } else {
 //                event.getPlayer().sendActionBar(Component.color("&cRespawn in " + i[0] + " seconds"));
                 event.getPlayer().showTitle(Title.title(Component.color("&c"+i[0]), Component.color("&aдо возрождения"),
-                        Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
+                        Title.Times.times(Duration.ZERO, Duration.ofMillis(1500L), Duration.ZERO)));
                 i[0]--;
             }
         }, 0L, 20L);

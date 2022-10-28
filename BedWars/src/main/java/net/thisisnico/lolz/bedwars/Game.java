@@ -12,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -90,9 +92,29 @@ public class Game {
         // TODO. Load arena
     }
 
+    public static void dispose() {
+        for (Team team : teams) {
+            for (Player player : team.getPlayers()) {
+                player.teleport(arena.getWorld().getSpawnLocation());
+            }
+        }
+        teams.clear();
+        for (ResourceGenerator generator : generators) {
+            generator.getHologram().remove();
+        }
+        for (Block playerBlock : playerBlocks) {
+            playerBlock.setType(Material.AIR);
+        }
+        for (Entity entity : arena.getWorld().getEntities()) {
+            if (entity instanceof ArmorStand) {
+                entity.remove();
+            }
+        }
+    }
+
     public static void start() {
 
-        // TODO. Sort players in teams
+        
 
         for (Team team : teams) {
             for (Player player : team.getPlayers()) {

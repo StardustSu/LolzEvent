@@ -19,5 +19,6 @@ public final class BedWars extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        Game.dispose();
     }
 }

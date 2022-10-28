@@ -13,7 +13,8 @@ public class Arena {
         this.world = world;
     }
 
-    @Getter
-    private Location spectatorSpawnLocation;
+    public final Location getSpectatorSpawnLocation() {
+        return world.getSpawnLocation();
+    }
 
 }
