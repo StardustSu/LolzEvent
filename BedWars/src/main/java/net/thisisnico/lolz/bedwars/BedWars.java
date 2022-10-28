@@ -18,8 +18,8 @@ public final class BedWars extends JavaPlugin {
         instance = this;
         BukkitUtils.registerListener(new GameHandler());
         Game.init();
-        BukkitUtils.registerCommand(new ReloadArenaCommand());
-        BukkitUtils.registerCommand(new StartGameCommand());
+        BukkitUtils.getAnnotationParser().parse(new ReloadArenaCommand());
+        BukkitUtils.getAnnotationParser().parse(new StartGameCommand());
     }
 
     @Override

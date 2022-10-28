@@ -92,16 +92,16 @@ public class ShopMenu extends InventoryMenu {
             }
         });
 
-        setItem(10, ItemUtil.generate(Material.PORKCHOP, 4, "§aСвинина", "Цена: 10 Бронзы"), _p -> {
+        setItem(10, ItemUtil.generate(Material.COOKED_PORKCHOP, 4, "§aСвинина", "Цена: 10 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 10)) {
                 removeItems(player, COPPER, 10);
-                player.getInventory().addItem(ItemUtil.generate(Material.PORKCHOP, 4, "§aСвинина"));
+                player.getInventory().addItem(ItemUtil.generate(Material.COOKED_PORKCHOP, 4, "§aСвинина"));
             }
         });
 
-        setItem(11, ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко", "Цена: 10 Бронзы"), _p -> {
-            if (hasEnough(player, COPPER, 10)) {
-                removeItems(player, COPPER, 10);
+        setItem(11, ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко", "Цена: 10 Железа"), _p -> {
+            if (hasEnough(player, Material.IRON_INGOT, 10)) {
+                removeItems(player, Material.IRON_INGOT, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко"));
             }
         });
@@ -287,7 +287,8 @@ public class ShopMenu extends InventoryMenu {
             }
         });
 
-        Material concreteMaterial = Material.valueOf(Objects.requireNonNull(Game.getTeam(player)).getColor().name().toUpperCase() + "_CONCRETE");
+        Material concreteMaterial = Material.valueOf(Objects.requireNonNull(Game.getTeam(player)).getColor().name()
+                .replaceAll("AQUA", "LIGHT_BLUE").toUpperCase() + "_CONCRETE");
         setItem(10, ItemUtil.generate(Material.GRAY_CONCRETE, 8, "§aБетон", "Цена: 8 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 8)) {
                 removeItems(_p, COPPER, 8);
@@ -306,7 +307,7 @@ public class ShopMenu extends InventoryMenu {
     }
 
     public ShopMenu(Player p) {
-        super("", 1, true);
+        super("magazin", 2, true);
 
         this.player = p;
 

@@ -45,5 +45,6 @@ public class ResourceGenerator {
 
     public void dispose() {
         task.cancel();
+        hologram.remove();
     }
 }

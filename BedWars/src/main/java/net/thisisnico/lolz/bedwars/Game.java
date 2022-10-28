@@ -11,13 +11,16 @@ import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import net.thisisnico.lolz.common.database.Clan;
 import net.thisisnico.lolz.common.database.Database;
 import net.thisisnico.lolz.common.database.User;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 
@@ -75,11 +78,14 @@ public class Game {
     }
 
     public static void init() {
+        arena = new Arena(BukkitUtils.getPlugin().getServer().getWorlds().get(0));
+    }
+
+    public static void startTimer() {
         for (ResourceGenerator generator : generators) {
             generator.dispose();
         }
         generators.clear();
-        arena = new Arena(BukkitUtils.getPlugin().getServer().getWorlds().get(0));
 
         for (ArmorStand entity : arena.getWorld().getEntitiesByClass(ArmorStand.class)) {
             for (String tag : entity.getScoreboardTags()) {
@@ -97,9 +103,7 @@ public class Game {
                 }
             }
         }
-    }
 
-    public static void startTimer() {
         final int[] i = {10};
         Bukkit.getScheduler().runTaskTimer(BukkitUtils.getPlugin(), task -> {
             if (i[0] == 0) {
@@ -150,7 +154,6 @@ public class Game {
         for (Team team : teams) {
             for (Player player : team.getPlayers()) {
                 player.teleport(team.getSpawnLocation());
-                givePlayerStartItems(player, team);
             }
         }
 
@@ -172,37 +175,12 @@ public class Game {
         }
         for (Entity entity : arena.getWorld().getEntities()) {
             if (entity instanceof ArmorStand) {
+                if (entity.getScoreboardTags().contains("generator")) entity.remove();
+            }
+            if (entity instanceof Item) {
                 entity.remove();
             }
         }
-    }
-
-    public static void givePlayerStartItems(Player player, Team team) {
-        player.getInventory().clear();
-        var color = Color.fromRGB(team.getColor().getColor().red(), team.getColor().getColor().green(), team.getColor().getColor().blue());
-        var is = new ItemStack(Material.LEATHER_HELMET);
-        var meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(color);
-        is.setItemMeta(meta);
-        player.getInventory().setHelmet(is);
-
-        is = new ItemStack(Material.LEATHER_CHESTPLATE);
-        meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(color);
-        is.setItemMeta(meta);
-        player.getInventory().setChestplate(is);
-
-        is = new ItemStack(Material.LEATHER_LEGGINGS);
-        meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(color);
-        is.setItemMeta(meta);
-        player.getInventory().setLeggings(is);
-
-        is = new ItemStack(Material.LEATHER_BOOTS);
-        meta = (LeatherArmorMeta) is.getItemMeta();
-        meta.setColor(color);
-        is.setItemMeta(meta);
-        player.getInventory().setBoots(is);
     }
 
     public static void stop() {
