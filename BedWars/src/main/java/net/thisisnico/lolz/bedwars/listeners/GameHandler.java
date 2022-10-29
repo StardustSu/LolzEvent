@@ -95,33 +95,28 @@ public class GameHandler implements Listener {
                     return;
                 }
                 clan.givePoints(Const.POINTS_FOR_FINAL_KILL);
+                if (killer.isOnline())
+                    Bukkit.broadcast(Component.color("&e" + killer.getName() + " &aполучил &e" + Const.POINTS_FOR_FINAL_KILL + " &aочков за финальный убийство"));
+            } else {
+                Bukkit.broadcast(Component.color("&cНикто не убил последнего игрока"));
             }
+
             return;
         }
 
-//        Bukkit.getScheduler().runTaskLater(BedWars.getInstance(), () -> {
-//            event.getPlayer().teleport(team.getSpawnLocation());
-//            Game.givePlayerStartItems(event.getPlayer(), team);
-//            event.getPlayer().setGameMode(GameMode.SURVIVAL);
-//            event.getPlayer().setAllowFlight(false);
-//            event.getPlayer().setFlying(false);
-//        }, RESPAWN_DELAY * 20L);
-
         final int[] i = {Const.RESPAWN_DELAY};
         Bukkit.getScheduler().runTaskTimer(BukkitUtils.getPlugin(), task -> {
-            if(i[0] == 0) {
+            if (i[0] == 0) {
                 event.getPlayer().teleport(team.getSpawnLocation());
                 event.getPlayer().setGameMode(GameMode.SURVIVAL);
                 event.getPlayer().setAllowFlight(false);
                 event.getPlayer().setFlying(false);
-                event.getPlayer().getInventory().setContents(new ItemStack[] {});
-//                event.getPlayer().showTitle(Title.title(Component.color("&cВ бой!"), Component.color("&f"), Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
-                task.cancel();
+                event.getPlayer().getInventory().setContents(new ItemStack[]{});
+               task.cancel();
             } else {
                 event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
                 event.getPlayer().setGameMode(GameMode.SPECTATOR);
                 event.getPlayer().sendActionBar(Component.color("&cРеспавн через " + i[0] + " сек"));
-//                event.getPlayer().showTitle(Title.title(Component.color("&c"+i[0]), Component.color("&aдо возрождения"), Title.Times.times(Duration.ZERO, Duration.ofMillis(1500), Duration.ZERO)));
                 i[0]--;
             }
         }, 0L, 20L);
@@ -179,10 +174,5 @@ public class GameHandler implements Listener {
             event.setCancelled(true);
             new ShopMenu(event.getPlayer());
         }
-
-        // SIDE NOTE: в классике нет улучшений
-//        if (event.getRightClicked().getName().contains("Улучшения")) {
-//
-//        } else
     }
 }
