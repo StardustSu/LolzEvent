@@ -1,5 +1,6 @@
 package net.thisisnico.lolz.bedwars.listeners;
 
+import net.thisisnico.lolz.bedwars.BedWars;
 import net.thisisnico.lolz.bedwars.Const;
 import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bedwars.classes.ResourceGenerator;
@@ -77,6 +78,11 @@ public class GameHandler implements Listener {
     @EventHandler
     private void onPlayerDieLikeASuckerWhatANerdBitchShitFuckHimHisMumIsStupidNobodyLikedHimAnyways(PlayerDeathEvent event) {
         event.setCancelled(true);
+
+        Bukkit.getScheduler().runTaskLater(BedWars.getInstance(), () -> {
+            event.getPlayer().setGameMode(GameMode.SPECTATOR);
+            event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
+        }, 1L);
 
         event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
         event.getPlayer().setGameMode(GameMode.SPECTATOR);
