@@ -1,6 +1,7 @@
 package net.thisisnico.lolz.bedwars.classes;
 
 import lombok.Getter;
+import net.thisisnico.lolz.bedwars.WorldEditStuff;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -21,6 +22,10 @@ public class Arena {
 
     public final Location getSpectatorSpawnLocation() {
         return world.getSpawnLocation();
+    }
+
+    public final void load() {
+        WorldEditStuff.load("arena");
     }
 
 }

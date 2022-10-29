@@ -18,6 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -25,6 +26,8 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Objects;
 
 public class GameHandler implements Listener {
 
@@ -54,6 +57,11 @@ public class GameHandler implements Listener {
         if (!Game.getArena().getPlayerBlocks().contains(event.getBlock())) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    private void onTnt(EntityExplodeEvent event) {
+        event.blockList().removeIf(block -> !Game.getArena().getPlayerBlocks().contains(block));
     }
 
     @EventHandler
@@ -91,7 +99,7 @@ public class GameHandler implements Listener {
             if (killer != null) {
                 var clan = DatabaseAdapter.getClan(killer);
                 if (clan == null) {
-                    if (killer.isOnline()) killer.getPlayer().sendMessage(Component.color("&cТы не в клане"));
+                    if (killer.isOnline()) Objects.requireNonNull(killer.getPlayer()).sendMessage(Component.color("&cТы не в клане"));
                     return;
                 }
                 clan.givePoints(Const.POINTS_FOR_FINAL_KILL);

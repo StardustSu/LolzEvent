@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.kyori.adventure.title.Title;
 import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bukkit.utils.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -60,9 +61,10 @@ public class Team {
 
     public void destroyBed() {
         isBedDestroyed = true;
-        for (Player player : players) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1f);
-            player.showTitle(Title.title(Component.color("&cКровать уничтожена!"), Component.color("&eВы больше не возродитесь.")));
+            if (players.contains(player))
+                player.showTitle(Title.title(Component.color("&cКровать уничтожена!"), Component.color("&eВы больше не возродитесь.")));
         }
     }
 
