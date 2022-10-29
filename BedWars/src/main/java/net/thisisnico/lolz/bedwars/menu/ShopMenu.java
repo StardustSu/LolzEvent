@@ -56,13 +56,15 @@ public class ShopMenu extends InventoryMenu {
     }
 
     private static final Material COPPER = Material.BRICK;
+    private static final Material IRON = Material.IRON_INGOT;
+    private static final Material GOLD = Material.GOLD_INGOT;
 
     private void showExtrasMenu() {
         addCategoriesItems();
 
         setItem(9, ItemUtil.generate(Material.COBWEB, 1, "§aПаутина", "Цена: 3 Железа"), _p -> {
-            if (hasEnough(player, Material.IRON_INGOT, 3)) {
-                removeItems(player, Material.IRON_INGOT, 3);
+            if (hasEnough(player, IRON, 3)) {
+                removeItems(player, IRON, 3);
                 player.getInventory().addItem(ItemUtil.generate(Material.COBWEB, 1, true, "§aПаутина"));
             }
         });
@@ -75,8 +77,8 @@ public class ShopMenu extends InventoryMenu {
         });
 
         setItem(11, ItemUtil.generate(Material.TNT, 1, "§aТНТ", "Цена: 4 Железа"), _p -> {
-            if (hasEnough(player, Material.IRON_INGOT, 4)) {
-                removeItems(player, Material.IRON_INGOT, 4);
+            if (hasEnough(player, IRON, 4)) {
+                removeItems(player, IRON, 4);
                 player.getInventory().addItem(ItemUtil.generate(Material.TNT, 1, true, "§aТНТ"));
             }
         });
@@ -100,8 +102,8 @@ public class ShopMenu extends InventoryMenu {
         });
 
         setItem(11, ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко", "Цена: 10 Железа"), _p -> {
-            if (hasEnough(player, Material.IRON_INGOT, 10)) {
-                removeItems(player, Material.IRON_INGOT, 10);
+            if (hasEnough(player, IRON, 10)) {
+                removeItems(player, IRON, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко"));
             }
         });
@@ -131,9 +133,9 @@ public class ShopMenu extends InventoryMenu {
             }
         });
 
-        setItem(12, ItemUtil.generate(Material.DIAMOND_PICKAXE, 1, "§aАлмазная кирка", "Цена: 10 Железа"), _p -> {
-            if (hasEnough(player, Material.IRON_INGOT, 10)) {
-                removeItems(player, Material.IRON_INGOT, 10);
+        setItem(12, ItemUtil.generate(Material.DIAMOND_PICKAXE, 1, "§aАлмазная кирка", "Цена: 10 Золота"), _p -> {
+            if (hasEnough(player, GOLD, 10)) {
+                removeItems(player, GOLD, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.DIAMOND_PICKAXE, 1, true, "§aАлмазная кирка"));
             }
         });
@@ -170,16 +172,16 @@ public class ShopMenu extends InventoryMenu {
             }
         });
 
-        setItem(14, ItemUtil.generate(Material.BOW, 1, "§aЛук", "Цена: 7 Железа"), _p -> {
-            if (hasEnough(_p, Material.IRON_INGOT, 7)) {
-                removeItems(_p, Material.IRON_INGOT, 7);
+        setItem(14, ItemUtil.generate(Material.BOW, 1, "§aЛук", "Цена: 7 Золота"), _p -> {
+            if (hasEnough(_p, GOLD, 7)) {
+                removeItems(_p, GOLD, 7);
                 _p.getInventory().addItem(ItemUtil.generate(Material.BOW, 1, "§aЛук"));
             }
         });
 
-        setItem(15, ItemUtil.generate(Material.ARROW, 1, "§aСтрела", "Цена: 10 Бронзы"), _p -> {
-            if (hasEnough(_p, COPPER, 10)) {
-                removeItems(_p, COPPER, 10);
+        setItem(15, ItemUtil.generate(Material.ARROW, 1, "§aСтрела", "Цена: 1 Железо"), _p -> {
+            if (hasEnough(_p, IRON, 1)) {
+                removeItems(_p, IRON, 1);
                 _p.getInventory().addItem(ItemUtil.generate(Material.ARROW, 3, "§aСтрела"));
             }
         });
@@ -259,8 +261,8 @@ public class ShopMenu extends InventoryMenu {
                 return;
             }
 
-            if (hasEnough(_p, Material.IRON_INGOT, 16)) {
-                removeItems(_p, Material.IRON_INGOT, 16);
+            if (hasEnough(_p, IRON, 16)) {
+                removeItems(_p, IRON, 16);
 
                 var is = new ItemStack(Material.IRON_HELMET);
                 player.getInventory().setHelmet(is);
@@ -297,9 +299,9 @@ public class ShopMenu extends InventoryMenu {
             }
         });
 
-        setItem(11, ItemUtil.generate(Material.OBSIDIAN, 8, "§aОбсидиан", "Цена: 8 Железных слитков"), _p -> {
-            if (hasEnough(_p, Material.IRON_INGOT, 8)) {
-                removeItems(_p, Material.IRON_INGOT, 8);
+        setItem(11, ItemUtil.generate(Material.OBSIDIAN, 8, "§aОбсидиан", "Цена: 8 Золота"), _p -> {
+            if (hasEnough(_p, GOLD, 8)) {
+                removeItems(_p, GOLD, 8);
 
                 _p.getInventory().addItem(ItemUtil.generate(Material.OBSIDIAN, 8, "§aОбсидиан"));
             }
