@@ -6,6 +6,7 @@ import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -31,6 +32,13 @@ public class ResourceGenerator {
             @Override
             public void run() {
                 if (!Game.isRunning()) return;
+                for (Item item : location.getNearbyEntitiesByType(Item.class, 1)) {
+                    if (item.getItemStack().getType() == resource.getType()) {
+                        if (item.getItemStack().getAmount() >= 64) {
+                            return;
+                        }
+                    }
+                }
                 location.getWorld().dropItem(location, resource);
             }
         }.runTaskTimer(BukkitUtils.getPlugin(), 0, seconds * 20L);

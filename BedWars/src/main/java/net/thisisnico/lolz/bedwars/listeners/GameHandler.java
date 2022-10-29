@@ -19,6 +19,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -55,6 +57,16 @@ public class GameHandler implements Listener {
     }
 
     @EventHandler
+    private void onCraft(PrepareItemCraftEvent e) {
+        e.getInventory().setResult(new ItemStack(Material.AIR));
+    }
+
+    @EventHandler
+    private void onCraft(CraftItemEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
     private void onPlayerDieLikeASuckerWhatANerdBitchShitFuckHimHisMumIsStupidNobodyLikedHimAnyways(PlayerDeathEvent event) {
         event.setCancelled(true);
 
@@ -77,9 +89,9 @@ public class GameHandler implements Listener {
             OfflinePlayer killer = event.getPlayer().getKiller();
             if (killer == null) killer = team.getCoolDudeWhoBrokeDaBed();
             if (killer != null) {
-                var clan = DatabaseAdapter.getClan(event.getPlayer());
+                var clan = DatabaseAdapter.getClan(killer);
                 if (clan == null) {
-                    event.getPlayer().sendMessage(Component.color("&cТы не в клане"));
+                    if (killer.isOnline()) killer.getPlayer().sendMessage(Component.color("&cТы не в клане"));
                     return;
                 }
                 clan.givePoints(Const.POINTS_FOR_FINAL_KILL);
