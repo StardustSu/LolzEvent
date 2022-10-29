@@ -84,8 +84,8 @@ public class GameHandler implements Listener {
 
         if (team.isBedDestroyed()) {
             Bukkit.broadcast(Component.color("&b&lFINAL KILL!"));
-            event.getPlayer().teleport(Game.getArena().getWorld().getSpawnLocation());
-            event.getPlayer().setGameMode(GameMode.SPECTATOR);
+            Bukkit.broadcast(Component.color("Player pos: " + event.getEntity().getLocation().getBlockX() + " " + event.getEntity().getLocation().getBlockY() + " " + event.getEntity().getLocation().getBlockZ()));
+            Bukkit.broadcast(Component.color("SpectatorSpawnLocation pos: " + Game.getArena().getSpectatorSpawnLocation().getBlockX() + " " + Game.getArena().getSpectatorSpawnLocation().getBlockY() + " " + Game.getArena().getSpectatorSpawnLocation().getBlockZ()));
             OfflinePlayer killer = event.getPlayer().getKiller();
             if (killer == null) killer = team.getCoolDudeWhoBrokeDaBed();
             if (killer != null) {
