@@ -1,34 +1,27 @@
 package net.thisisnico.lolz.bedwars.listeners;
 
-import net.thisisnico.lolz.bedwars.BedWars;
-import net.thisisnico.lolz.bedwars.Const;
 import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bedwars.classes.ResourceGenerator;
 import net.thisisnico.lolz.bedwars.classes.Team;
 import net.thisisnico.lolz.bedwars.menu.ShopMenu;
-import net.thisisnico.lolz.bukkit.BukkitUtils;
-import net.thisisnico.lolz.bukkit.utils.Component;
-import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Objects;
 
 public class GameHandler implements Listener {
 
@@ -77,63 +70,32 @@ public class GameHandler implements Listener {
 
     @EventHandler
     private void onPlayerDieLikeASuckerWhatANerdBitchShitFuckHimHisMumIsStupidNobodyLikedHimAnyways(PlayerDeathEvent event) {
-        event.setCancelled(true);
-
-        Bukkit.getScheduler().runTaskLater(BedWars.getInstance(), () -> {
-            event.getPlayer().setGameMode(GameMode.SPECTATOR);
-            event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
-        }, 1L);
-
-        event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
-        event.getPlayer().setGameMode(GameMode.SPECTATOR);
-        Team team = Game.getTeam(event.getPlayer());
-
-        if (team == null) return;
-        Bukkit.broadcast(Component.color(event.getPlayer().getName()).color(team.getColor().getColor())
-                .append(Component.color(" &7умер")));
-
-        event.getPlayer().getInventory().clear();
-        event.getPlayer().setAllowFlight(true);
-        event.getPlayer().setFlying(true);
-
-        if (team.isBedDestroyed()) {
-            Bukkit.broadcast(Component.color("&b&lFINAL KILL!"));
-            Bukkit.broadcast(Component.color("Player pos: " + event.getEntity().getLocation().getBlockX() + " " + event.getEntity().getLocation().getBlockY() + " " + event.getEntity().getLocation().getBlockZ()));
-            Bukkit.broadcast(Component.color("SpectatorSpawnLocation pos: " + Game.getArena().getSpectatorSpawnLocation().getBlockX() + " " + Game.getArena().getSpectatorSpawnLocation().getBlockY() + " " + Game.getArena().getSpectatorSpawnLocation().getBlockZ()));
-            OfflinePlayer killer = event.getPlayer().getKiller();
-            if (killer == null) killer = team.getCoolDudeWhoBrokeDaBed();
-            if (killer != null) {
-                var clan = DatabaseAdapter.getClan(killer);
-                if (clan == null) {
-                    if (killer.isOnline()) Objects.requireNonNull(killer.getPlayer()).sendMessage(Component.color("&cТы не в клане"));
-                    return;
-                }
-                clan.givePoints(Const.POINTS_FOR_FINAL_KILL);
-                if (killer.isOnline())
-                    Bukkit.broadcast(Component.color("&e" + killer.getName() + " &aполучил &e" + Const.POINTS_FOR_FINAL_KILL + " &aочков за финальный убийство"));
-            } else {
-                Bukkit.broadcast(Component.color("&cНикто не убил последнего игрока"));
-            }
-
-            return;
+        if (Game.isRunning()) {
+            Game.kill(event.getPlayer(), true);
         }
+        event.setCancelled(true);
+    }
 
-        final int[] i = {Const.RESPAWN_DELAY};
-        Bukkit.getScheduler().runTaskTimer(BukkitUtils.getPlugin(), task -> {
-            if (i[0] == 0) {
-                event.getPlayer().teleport(team.getSpawnLocation());
-                event.getPlayer().setGameMode(GameMode.SURVIVAL);
-                event.getPlayer().setAllowFlight(false);
-                event.getPlayer().setFlying(false);
-                event.getPlayer().getInventory().setContents(new ItemStack[]{});
-               task.cancel();
-            } else {
-                event.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
-                event.getPlayer().setGameMode(GameMode.SPECTATOR);
-                event.getPlayer().sendActionBar(Component.color("&cРеспавн через " + i[0] + " сек"));
-                i[0]--;
+    @EventHandler
+    private void onDamage(EntityDamageByEntityEvent e) {
+        if (e.getEntity() instanceof Player p) {
+            if (e.getDamager() instanceof Player dmg) {
+                var team = Game.getTeam(dmg);
+                if (team != null) {
+                    if (team.getPlayers().contains(p.getName())) {
+                        e.setCancelled(true);
+                    }
+                }
             }
-        }, 0L, 20L);
+        }
+    }
+
+    @EventHandler
+    private void onPickup(PlayerAttemptPickupItemEvent e) {
+        if (e.getItem().getItemStack().getType().name().contains("BED")) {
+            e.setCancelled(true);
+            e.getItem().remove();
+        }
     }
 
     @EventHandler
@@ -152,7 +114,7 @@ public class GameHandler implements Listener {
         }
 
         for (ResourceGenerator generator : Game.getGenerators()) {
-            if (loc.distance(generator.getLocation()) < 2) {
+            if (loc.distance(generator.getLocation()) < 3.5f) {
                 event.setCancelled(true);
                 return;
             }

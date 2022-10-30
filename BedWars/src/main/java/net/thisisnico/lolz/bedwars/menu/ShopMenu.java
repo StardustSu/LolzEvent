@@ -5,6 +5,7 @@ import net.thisisnico.lolz.bukkit.utils.InventoryMenu;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -64,6 +65,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(9, ItemUtil.generate(Material.COBWEB, 1, "§aПаутина", "Цена: 3 Железа"), _p -> {
             if (hasEnough(player, IRON, 3)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, IRON, 3);
                 player.getInventory().addItem(ItemUtil.generate(Material.COBWEB, 1, true, "§aПаутина"));
             }
@@ -71,6 +73,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(10, ItemUtil.generate(Material.FLINT_AND_STEEL, 1, "§aЗажигалка", "Цена: 10 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 10)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, COPPER, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.FLINT_AND_STEEL, 1, true, "§aЗажигалка"));
             }
@@ -78,6 +81,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(11, ItemUtil.generate(Material.TNT, 1, "§aТНТ", "Цена: 4 Железа"), _p -> {
             if (hasEnough(player, IRON, 4)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, IRON, 4);
                 player.getInventory().addItem(ItemUtil.generate(Material.TNT, 1, true, "§aТНТ"));
             }
@@ -89,6 +93,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(9, ItemUtil.generate(Material.BREAD, 4, "§aХлеб", "Цена: 10 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 10)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, COPPER, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.BREAD, 4, "§aХлеб"));
             }
@@ -96,6 +101,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(10, ItemUtil.generate(Material.COOKED_PORKCHOP, 4, "§aСвинина", "Цена: 10 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 10)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, COPPER, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.COOKED_PORKCHOP, 4, "§aСвинина"));
             }
@@ -103,6 +109,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(11, ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко", "Цена: 10 Железа"), _p -> {
             if (hasEnough(player, IRON, 10)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, IRON, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.GOLDEN_APPLE, 1, "§aЗолотое яблоко"));
             }
@@ -114,6 +121,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(9, ItemUtil.generate(Material.WOODEN_PICKAXE, 1, "§aДеревянная кирка", "Цена: 10 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 10)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, COPPER, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.WOODEN_PICKAXE, 1, true, "§aДеревянная кирка"));
             }
@@ -121,6 +129,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(10, ItemUtil.generate(Material.STONE_PICKAXE, 1, "§aКаменная кирка", "Цена: 20 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 20)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, COPPER, 20);
                 player.getInventory().addItem(ItemUtil.generate(Material.STONE_PICKAXE, 1, true, "§aКаменная кирка"));
             }
@@ -128,6 +137,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(11, ItemUtil.generate(Material.IRON_PICKAXE, 1, "§aЖелезная кирка", "Цена: 30 Бронзы"), _p -> {
             if (hasEnough(player, COPPER, 30)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, COPPER, 30);
                 player.getInventory().addItem(ItemUtil.generate(Material.IRON_PICKAXE, 1, true, "§aЖелезная кирка"));
             }
@@ -135,6 +145,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(12, ItemUtil.generate(Material.DIAMOND_PICKAXE, 1, "§aАлмазная кирка", "Цена: 10 Золота"), _p -> {
             if (hasEnough(player, GOLD, 10)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(player, GOLD, 10);
                 player.getInventory().addItem(ItemUtil.generate(Material.DIAMOND_PICKAXE, 1, true, "§aАлмазная кирка"));
             }
@@ -146,6 +157,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(9, ItemUtil.generate(Material.STICK, 1, "§aПалка ударялка", "Цена: 16 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 16)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, COPPER, 16);
                 _p.getInventory().addItem(ItemUtil.generate(Material.STICK, 1, true, "§aПалка ударялка", Enchantment.KNOCKBACK, 1));
             }
@@ -153,6 +165,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(10, ItemUtil.generate(Material.WOODEN_SWORD, 1, "§aДеревянный меч", "Цена: 7 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 7)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, COPPER, 7);
                 _p.getInventory().addItem(ItemUtil.generate(Material.WOODEN_SWORD, 1, "§aДеревянный меч"));
             }
@@ -160,6 +173,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(11, ItemUtil.generate(Material.STONE_SWORD, 1, "§aКаменный меч", "Цена: 16 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 16)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, COPPER, 16);
                 _p.getInventory().addItem(ItemUtil.generate(Material.STONE_SWORD, 1, "§aКаменный меч"));
             }
@@ -167,6 +181,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(12, ItemUtil.generate(Material.IRON_SWORD, 1, "§aЖелезный меч", "Цена: 32 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 32)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, COPPER, 32);
                 _p.getInventory().addItem(ItemUtil.generate(Material.IRON_SWORD, 1, "§aЖелезный меч"));
             }
@@ -174,6 +189,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(14, ItemUtil.generate(Material.BOW, 1, "§aЛук", "Цена: 7 Золота"), _p -> {
             if (hasEnough(_p, GOLD, 7)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, GOLD, 7);
                 _p.getInventory().addItem(ItemUtil.generate(Material.BOW, 1, "§aЛук"));
             }
@@ -181,6 +197,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(15, ItemUtil.generate(Material.ARROW, 1, "§aСтрела", "Цена: 1 Железо"), _p -> {
             if (hasEnough(_p, IRON, 1)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, IRON, 1);
                 _p.getInventory().addItem(ItemUtil.generate(Material.ARROW, 3, "§aСтрела"));
             }
@@ -197,6 +214,7 @@ public class ShopMenu extends InventoryMenu {
             }
 
             if (hasEnough(_p, COPPER, 16)) {
+                player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_IRON, 1, 1);
                 removeItems(_p, COPPER, 16);
 
                 var team = Game.getTeam(_p);
@@ -237,6 +255,7 @@ public class ShopMenu extends InventoryMenu {
             }
 
             if (hasEnough(_p, COPPER, 32)) {
+                player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_IRON, 1, 1);
                 removeItems(_p, COPPER, 32);
 
                 var is = new ItemStack(Material.CHAINMAIL_HELMET);
@@ -262,6 +281,7 @@ public class ShopMenu extends InventoryMenu {
             }
 
             if (hasEnough(_p, IRON, 16)) {
+                player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_IRON, 1, 1);
                 removeItems(_p, IRON, 16);
 
                 var is = new ItemStack(Material.IRON_HELMET);
@@ -284,6 +304,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(9, ItemUtil.generate(Material.SANDSTONE, 16, "§aПесчаник", "Цена: 4 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 4)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, COPPER, 4);
                 _p.getInventory().addItem(ItemUtil.generate(Material.SANDSTONE, 16, "§aПесчаник"));
             }
@@ -293,6 +314,7 @@ public class ShopMenu extends InventoryMenu {
                 .replaceAll("AQUA", "LIGHT_BLUE").toUpperCase() + "_CONCRETE");
         setItem(10, ItemUtil.generate(Material.GRAY_CONCRETE, 8, "§aБетон", "Цена: 8 Бронзы"), _p -> {
             if (hasEnough(_p, COPPER, 8)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, COPPER, 8);
 
                 _p.getInventory().addItem(ItemUtil.generate(concreteMaterial, 8, "§aБетон"));
@@ -301,6 +323,7 @@ public class ShopMenu extends InventoryMenu {
 
         setItem(11, ItemUtil.generate(Material.OBSIDIAN, 8, "§aОбсидиан", "Цена: 8 Золота"), _p -> {
             if (hasEnough(_p, GOLD, 8)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
                 removeItems(_p, GOLD, 8);
 
                 _p.getInventory().addItem(ItemUtil.generate(Material.OBSIDIAN, 8, "§aОбсидиан"));

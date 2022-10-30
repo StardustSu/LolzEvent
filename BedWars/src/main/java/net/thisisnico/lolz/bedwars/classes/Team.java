@@ -22,7 +22,7 @@ public class Team {
     private final TeamColor color;
 
     @Getter
-    private final ArrayList<Player> players = new ArrayList<>();
+    private final ArrayList<String> players = new ArrayList<>();
     @Getter
     private boolean isBedDestroyed = false;
 
@@ -32,6 +32,9 @@ public class Team {
     private Location bedLocation;
     @Getter
     private Location spawnLocation;
+
+    @Getter
+    private int score = 0;
 
     public Team(String name) {
         this.name = name;
@@ -55,16 +58,21 @@ public class Team {
 //    private int bedsDestroyed = 0; // Уничтожения кроватей
 //    private int playersFinalKilled = 0; // Финальные убийства игроков
 
+    public void addScore(int score) {
+        this.score += score;
+    }
+
     public void addPlayer(Player player) {
-        players.add(player);
+        players.add(player.getName());
     }
 
     public void destroyBed() {
         isBedDestroyed = true;
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1f);
-            if (players.contains(player))
-                player.showTitle(Title.title(Component.color("&cКровать уничтожена!"), Component.color("&eВы больше не возродитесь.")));
+            if (players.contains(player.getName()))
+                player.showTitle(Title.title(Component.color("&cКровать уничтожена!"),
+                        Component.color("&eВы больше не возродитесь.")));
         }
     }
 
