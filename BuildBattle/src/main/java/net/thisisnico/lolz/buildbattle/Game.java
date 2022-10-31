@@ -34,11 +34,11 @@ public class Game {
     }
 
     @Getter
-    private static final HashSet<Player> players = new HashSet<>();
+    private static final HashSet<String> players = new HashSet<>();
 
     private static final HashSet<Plot> plots = new HashSet<>();
 
-    public static Plot getPlot(Player player) {
+    public static Plot getPlot(String player) {
         if (!isPlayer(player)) return null;
         if (!isStarted()) return null;
 
@@ -72,12 +72,12 @@ public class Game {
                 continue;
             }
 
-            plots.add(new Plot(player, location));
+            plots.add(new Plot(player.getName(), location));
 
             // Каждый плот размером 32 на 32 с запасом для красивых стен
             location.add(0, 0, 50);
 
-            players.add(player);
+            players.add(player.getName());
             player.teleport(location);
             player.setGameMode(GameMode.CREATIVE);
             player.setAllowFlight(true);
@@ -88,7 +88,7 @@ public class Game {
             player.sendMessage("§a§lBuildBattle §7| §aУ вас есть 5 минут на то, чтобы сделать");
             player.sendMessage("§a§lBuildBattle §7| §aкрасивую постройку на тему \"" + theme + "\"!");
 
-            player.showTitle(Title.title(Component.color("&a"+theme), Component.color("&eУ вас есть 5 минут на постройку!")));
+            player.showTitle(Title.title(Component.color("&a" + theme), Component.color("&eУ вас есть 5 минут на постройку!")));
         }
 
         Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), Game::startVote, 20 * 30);
@@ -144,7 +144,8 @@ public class Game {
                 }
 
                 var plot = plotIter.next();
-                Player player = (Player) plot.getOwner();
+                Player player = Bukkit.getPlayerExact(plot.getOwner());
+
                 currentPlot = plot;
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -156,7 +157,6 @@ public class Game {
             }
         }.runTaskTimer(BuildBattle.getInstance(), 0, 20 * 20);
     }
-
 
     public static void end() {
         state = GameState.LOBBY;
@@ -179,8 +179,22 @@ public class Game {
         currentPlot = null;
     }
 
-    public static boolean isPlayer(Player p) {
-        return players.contains(p);
+    public static boolean isPlayer(String p) {
+        for (String player : players) {
+            if (player.equals(p)) {
+                if(!player.equals(p)) {
+                    for (Plot plot : plots) {
+                        if (plot.getOwner().equals(p)) {
+                            plot.setOwner(player);
+                        }
+                    }
+                    players.remove(player);
+                    players.add(p);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     // Voting items
@@ -206,9 +220,9 @@ public class Game {
     private static void voteForCurrentPlot(Player player, int score) {
         if (score < -10 || score > 5) return;
         if (currentPlot == null) return;
-        currentPlot.addVote(player, score);
+        currentPlot.addVote(player.getName(), score);
         if (score < 0) player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, .1f);
-        else player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, score/5f);
+        else player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, score / 5f);
     }
 
 }

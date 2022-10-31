@@ -23,7 +23,7 @@ public class GameHandler implements Listener {
         e.getPlayer().getInventory().clear();
         e.getPlayer().setGameMode(GameMode.SURVIVAL);
         if (Game.isStarted() &&
-                (!Game.isPlayer(e.getPlayer()) || DatabaseAdapter.getUser(e.getPlayer()).isAdmin())) {
+                (!Game.isPlayer(e.getPlayer().getName()) || DatabaseAdapter.getUser(e.getPlayer()).isAdmin())) {
             e.getPlayer().setGameMode(GameMode.SPECTATOR);
         }
 
@@ -55,10 +55,10 @@ public class GameHandler implements Listener {
     }
 
     boolean check(Player player, Location to) {
-        if (Game.isStarted() && Game.isPlayer(player)) {
+        if (Game.isStarted() && Game.isPlayer(player.getName())) {
             Plot plot = null;
             if (Game.getState() == GameState.BUILDING) {
-                plot = Game.getPlot(player);
+                plot = Game.getPlot(player.getName());
             } else if (Game.getState() == GameState.VOTING) {
                 plot = Game.getCurrentPlot();
             }
