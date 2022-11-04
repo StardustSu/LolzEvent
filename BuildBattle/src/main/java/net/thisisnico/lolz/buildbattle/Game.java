@@ -64,7 +64,7 @@ public class Game {
 
         Location location = spawn.clone();
 
-        location.add(0, 0, 50);
+        location.add(0.5, 0, 50.5);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (isTournament && DatabaseAdapter.getUser(player).isAdmin()) {
@@ -72,10 +72,10 @@ public class Game {
                 continue;
             }
 
-            plots.add(new Plot(player.getName(), location));
-
             // Каждый плот размером 32 на 32 с запасом для красивых стен
             location.add(0, 0, 50);
+
+            plots.add(new Plot(player.getName(), location.clone()));
 
             players.add(player.getName());
             player.teleport(location);
@@ -117,19 +117,24 @@ public class Game {
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (isTournament) {
-                if (DatabaseAdapter.getUser(p).isAdmin()) givePlayerVoteItems(p);
+                if (p.isOp()) givePlayerVoteItems(p);
                 else p.setGameMode(GameMode.SPECTATOR);
                 continue;
             }
 
-            if (players.contains(p)) givePlayerVoteItems(p);
-            else p.setGameMode(GameMode.SPECTATOR);
+            if (players.contains(p.getName())) {
+                givePlayerVoteItems(p);
+            }
+            else {
+                p.setGameMode(GameMode.SPECTATOR);
+            }
         }
 
         BuildBattle.getLog().info("Vote started!");
         BuildBattle.getLog().info("Plots count: " + plots.size());
 
         var trashPlots = new HashSet<>(plots);
+        var tempPlots = new HashSet<>(plots);
 
         var plotIter = trashPlots.iterator();
 
@@ -153,7 +158,7 @@ public class Game {
                     p.teleport(plot.getLocation().clone().add(0, 10, -16));
                 }
 
-                trashPlots.remove(plot);
+                tempPlots.remove(plot);
             }
         }.runTaskTimer(BuildBattle.getInstance(), 0, 20 * 20);
     }
