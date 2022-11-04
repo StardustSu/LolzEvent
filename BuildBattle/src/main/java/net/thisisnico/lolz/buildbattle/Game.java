@@ -11,11 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Game {
     @Getter
-    private static final ClickableItem item = ClickableItem.of(ItemUtil.generate(Material.DIAMOND, 1,
+    private static final ClickableItem startGameItem = ClickableItem.of(ItemUtil.generate(Material.DIAMOND, 1,
             "&a&lBuildBattle", "&7Click to start the game!"), p -> start());
 
     @Getter
@@ -124,8 +125,7 @@ public class Game {
 
             if (players.contains(p.getName())) {
                 givePlayerVoteItems(p);
-            }
-            else {
+            } else {
                 p.setGameMode(GameMode.SPECTATOR);
             }
         }
@@ -154,6 +154,7 @@ public class Game {
                 currentPlot = plot;
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    assert player != null;
                     p.sendMessage("§a§lBuildBattle §7| §aПостройка игрока " + player.getName());
                     p.teleport(plot.getLocation().clone().add(0, 10, -16));
                 }
@@ -164,20 +165,45 @@ public class Game {
     }
 
     public static void end() {
-        state = GameState.LOBBY;
+        var sortedPlots = new ArrayList<>(plots);
+        sortedPlots.sort((o1, o2) -> o2.getScore() - o1.getScore());
+
+        currentPlot = sortedPlots.get(0);
+
+        // TODO: if (tournament) give reward
+        // Показать победителя
+        for (int i = 0; i < 3; i++) {
+            var plot = sortedPlots.get(i);
+            var player = Bukkit.getPlayerExact(plot.getOwner());
+
+            assert player != null;
+            Bukkit.broadcastMessage("§a§lBuildBattle §7| §a" + (i + 1) + " место: " + player.getName() + " (" + plot.getScore() + " очков)");
+        }
+
+        // Показать плот победителя
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.teleport(spawn);
-
-            if (DatabaseAdapter.getUser(player).isAdmin()) {
-                player.setGameMode(GameMode.CREATIVE);
-                continue;
-            }
-
-            player.setGameMode(GameMode.ADVENTURE);
-            player.setAllowFlight(false);
-            player.setFlying(false);
+            player.teleport(currentPlot.getLocation().clone().add(0, 10, -16));
             player.getInventory().clear();
         }
+
+        final int DELAY = 20 * 10;
+
+        Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), () -> {
+            state = GameState.LOBBY;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.teleport(spawn);
+
+                if (player.isOp()) {
+                    player.getInventory().addItem(startGameItem.getItemStack());
+                    player.setGameMode(GameMode.CREATIVE);
+                    continue;
+                }
+
+                player.setGameMode(GameMode.ADVENTURE);
+                player.setAllowFlight(false);
+                player.setFlying(false);
+            }
+        }, DELAY);
 
         players.clear();
         plots.clear();
@@ -187,15 +213,14 @@ public class Game {
     public static boolean isPlayer(String p) {
         for (String player : players) {
             if (player.equals(p)) {
-                if(!player.equals(p)) {
-                    for (Plot plot : plots) {
-                        if (plot.getOwner().equals(p)) {
-                            plot.setOwner(player);
-                        }
+                for (Plot plot : plots) {
+                    if (plot.getOwner().equals(p)) {
+                        plot.setOwner(player);
+                        break;
                     }
-                    players.remove(player);
-                    players.add(p);
                 }
+                players.remove(player);
+                players.add(p);
                 return true;
             }
         }
