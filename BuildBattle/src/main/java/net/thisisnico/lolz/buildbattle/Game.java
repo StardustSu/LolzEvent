@@ -172,7 +172,7 @@ public class Game {
 
         // TODO: if (tournament) give reward
         // Показать победителя
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < (sortedPlots.size() < 3 ? sortedPlots.size() : 3); i++) {
             var plot = sortedPlots.get(i);
             var player = Bukkit.getPlayerExact(plot.getOwner());
 
@@ -186,10 +186,11 @@ public class Game {
             player.getInventory().clear();
         }
 
-        final int DELAY = 20 * 10;
+        state = GameState.LOBBY;
+
+        final int DELAY = 20 * 3;
 
         Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), () -> {
-            state = GameState.LOBBY;
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.teleport(spawn);
 
