@@ -130,8 +130,16 @@ public class GameHandler implements Listener {
             event.setCancelled(true);
         }
 
+        var block = event.getClickedBlock();
         // ПКМ по кровати
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType().name().contains("BED") && event.getAction().name().contains("RIGHT")) {
+        if (block != null && block.getType().name().contains("BED") && event.getAction().isRightClick()) {
+            event.setCancelled(true);
+        }
+
+        if (block != null && (block.getType().name().contains("TRAPDOOR")
+                || block.getType() == Material.CRAFTING_TABLE
+                || block.getType() == Material.CHEST
+                || block.getType() == Material.FURNACE)) {
             event.setCancelled(true);
         }
     }

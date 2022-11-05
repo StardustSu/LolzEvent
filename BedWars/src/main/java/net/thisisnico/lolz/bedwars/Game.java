@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.ServerOperator;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
@@ -148,8 +149,6 @@ public class Game {
     public static void start() {
         if (isRunning) return;
 
-        WorldEditStuff.load("arena");
-
         for (Item entity : arena.getWorld().getEntitiesByClass(Item.class)) {
             if (entity.getItemStack().getType().name().contains("BED")) {
                 entity.remove();
@@ -210,6 +209,7 @@ public class Game {
     }
 
     public static void dispose() {
+        WorldEditStuff.load("arena");
         for (Team team : teams) {
             for (String player : team.getPlayers()) {
                 if (Bukkit.getPlayerExact(player) != null)
@@ -250,7 +250,7 @@ public class Game {
         if (team == null) return;
 
         OfflinePlayer killer = player.getKiller();
-        if (killer == null) killer = team.getCoolDudeWhoBrokeDaBed();
+        if (killer == null || killer == player) killer = team.getCoolDudeWhoBrokeDaBed();
 
         if (killer == null) Bukkit.broadcast(Component.color(player.getName()).color(team.getColor().getColor())
                 .append(Component.color(" &7умер"))
@@ -359,7 +359,14 @@ public class Game {
             Coloring.updateColors(onlinePlayer);
         }
 
-        dispose();
+        Bukkit.getScheduler().runTaskLater(BukkitUtils.getPlugin(), () -> {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.isOp()) continue;
+                onlinePlayer.kick(Component.color("&cИгра окончена"));
+            }
+            dispose();
+        }, 20L * 10);
+
     }
 
     public static Team getTeam(OfflinePlayer player) {

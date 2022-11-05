@@ -15,6 +15,7 @@
         <module>BuildBattle</module>
         <module>Proxy</module>
         <module>BedWars</module>
+        <module>BedwarsHelper</module>
     </modules>
 
     <distributionManagement>

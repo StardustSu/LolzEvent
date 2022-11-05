@@ -24,10 +24,6 @@ public class SystemHandler implements Listener {
         if (DatabaseAdapter.getUser(e.getPlayer()).isAdmin()) {
             e.getPlayer().setOp(true);
         }
-
-        if (e.getPlayer().getName().equalsIgnoreCase("nicojs")) {
-            e.getPlayer().setOp(true);
-        }
     }
 
     @EventHandler

@@ -77,7 +77,7 @@ public class Team {
     }
 
     public boolean isPlayerInTeam(Player player) {
-        return players.contains(player);
+        return players.contains(player.getName());
     }
 
     private boolean checkBedLocation(int x, int y, int z) {
@@ -97,18 +97,4 @@ public class Team {
         if (checkBedLocation(x + 1, y, z)) return true;
         return checkBedLocation(x - 1, y, z);
     }
-
-//    public void addFinalKill() {
-//        playersFinalKilled++;
-//    }
-//
-//    public void addBedsDestroyed() {
-//        bedsDestroyed++;
-//    }
-//
-//    public int getPointsCount() {
-//        final int pointsPerBed = 5;
-//        final int pointsPerFinalKill = 3;
-//        return bedsDestroyed * pointsPerBed + playersFinalKilled * pointsPerFinalKill;
-//    }
 }
