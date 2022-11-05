@@ -214,14 +214,6 @@ public class Game {
     public static boolean isPlayer(String p) {
         for (String player : players) {
             if (player.equals(p)) {
-                for (Plot plot : plots) {
-                    if (plot.getOwner().equals(p)) {
-                        plot.setOwner(player);
-                        break;
-                    }
-                }
-                players.remove(player);
-                players.add(p);
                 return true;
             }
         }
