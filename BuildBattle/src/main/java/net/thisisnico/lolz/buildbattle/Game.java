@@ -113,13 +113,13 @@ public class Game {
             }
             timer[0] ++;
 
-            bar.setProgress((double) timer[0] / time);
+            bar.setProgress(1-((double) timer[0] / time));
 
             if (timer[0] >= time) {
                 task.cancel();
                 Game.startVote();
             }
-        }, 0, 20);
+        }, 0, 1);
     }
 
     private static void givePlayerVoteItems(Player p) {
