@@ -172,7 +172,7 @@ public class Game {
 
         // TODO: if (tournament) give reward
         // Показать победителя
-        for (int i = 0; i < (sortedPlots.size() < 3 ? sortedPlots.size() : 3); i++) {
+        for (int i = 0; i < (Math.min(sortedPlots.size(), 3)); i++) {
             var plot = sortedPlots.get(i);
             var player = Bukkit.getPlayerExact(plot.getOwner());
 
@@ -214,14 +214,6 @@ public class Game {
     public static boolean isPlayer(String p) {
         for (String player : players) {
             if (player.equals(p)) {
-                for (Plot plot : plots) {
-                    if (plot.getOwner().equals(p)) {
-                        plot.setOwner(player);
-                        break;
-                    }
-                }
-                players.remove(player);
-                players.add(p);
                 return true;
             }
         }
