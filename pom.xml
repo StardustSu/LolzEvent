@@ -17,10 +17,24 @@
         <module>BedWars</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>space-maven</id>
+            <url>https://maven.pkg.jetbrains.space/stardustproj/p/sd/maven</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>space-maven</id>
+            <url>https://maven.pkg.jetbrains.space/stardustproj/p/sd/maven</url>
+        </repository>
+    </repositories>
 
 </project>
