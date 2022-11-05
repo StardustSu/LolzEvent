@@ -7,6 +7,9 @@ import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,6 +32,9 @@ public class Game {
     private static String theme;
 
     private static boolean isTournament = false;
+
+    @Getter
+    private static BossBar bar;
 
     public static boolean isStarted() {
         return state != GameState.LOBBY;
@@ -57,6 +63,8 @@ public class Game {
     public static void init() {
         world = Bukkit.getWorlds().get(0);
         spawn = world.getSpawnLocation();
+        bar = Bukkit.createBossBar("Build Battle", BarColor.BLUE, BarStyle.SOLID);
+        bar.setProgress(.0f);
     }
 
     public static void start() {
@@ -66,6 +74,10 @@ public class Game {
         Location location = spawn.clone();
 
         location.add(0.5, 0, 50.5);
+
+        theme = ThemeProvider.getInstance().getRandomTheme();
+        bar.setTitle(theme);
+        bar.setProgress(1.0f);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (isTournament && DatabaseAdapter.getUser(player).isAdmin()) {
@@ -92,7 +104,22 @@ public class Game {
             player.showTitle(Title.title(Component.color("&a" + theme), Component.color("&eУ вас есть 5 минут на постройку!")));
         }
 
-        Bukkit.getScheduler().runTaskLater(BuildBattle.getInstance(), Game::startVote, 20 * 30);
+        final int time = 5 * 60 * 20;
+        final int[] timer = {0};
+        Bukkit.getScheduler().runTaskTimer(BuildBattle.getInstance(), task -> {
+            if (state != GameState.BUILDING) {
+                task.cancel();
+                return;
+            }
+            timer[0] ++;
+
+            bar.setProgress((double) timer[0] / time);
+
+            if (timer[0] >= time) {
+                task.cancel();
+                Game.startVote();
+            }
+        }, 0, 20);
     }
 
     private static void givePlayerVoteItems(Player p) {
@@ -172,12 +199,29 @@ public class Game {
 
         // TODO: if (tournament) give reward
         // Показать победителя
-        for (int i = 0; i < (Math.min(sortedPlots.size(), 3)); i++) {
+        for (int i = 0; i < sortedPlots.size(); i++) {
             var plot = sortedPlots.get(i);
-            var player = Bukkit.getPlayerExact(plot.getOwner());
-
+            var player = Bukkit.getOfflinePlayerIfCached(plot.getOwner());
             assert player != null;
-            Bukkit.broadcastMessage("§a§lBuildBattle §7| §a" + (i + 1) + " место: " + player.getName() + " (" + plot.getScore() + " очков)");
+
+            var score = plot.getScores().values().size() != 0 ? plot.getScore() / plot.getScores().values().size() : 0;
+            if (score != 0) {
+                if (player.getPlayer() != null) {
+                    player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка заняла " + (i + 1) + " место!");
+                    player.getPlayer().sendMessage("§a§lBuildBattle §7| §aСредняя оценка: " + score);
+                }
+                DatabaseAdapter.getClan(player).givePoints(score * 10);
+            } else {
+                if (player.getPlayer() != null)
+                    player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка не набрала ни одной оценки!");
+            }
+
+            if (i < 4) {
+                Bukkit.broadcast(Component.color("§a§lBuildBattle §7| §a" + (i + 1) + " место: " + player.getName() + " (" + plot.getScore() + " очков)"));
+                if (isTournament) {
+                    DatabaseAdapter.getClan(player).givePoints((3 - i) * 10);
+                }
+            }
         }
 
         // Показать плот победителя
@@ -214,6 +258,14 @@ public class Game {
     public static boolean isPlayer(String p) {
         for (String player : players) {
             if (player.equals(p)) {
+                for (Plot plot : plots) {
+                    if (plot.getOwner().equals(p)) {
+                        plot.setOwner(player);
+                        break;
+                    }
+                }
+                players.remove(player);
+                players.add(p);
                 return true;
             }
         }
@@ -244,8 +296,8 @@ public class Game {
         if (score < -10 || score > 5) return;
         if (currentPlot == null) return;
         currentPlot.addVote(player.getName(), score);
-        if (score < 0) player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, .1f);
-        else player.playSound(player, Sound.ENTITY_CAT_PURREOW, 1f, score / 5f);
+        if (score < 0) player.playSound(player, Sound.ENTITY_CAT_BEG_FOR_FOOD, 1f, .1f);
+        else player.playSound(player, Sound.ENTITY_CAT_BEG_FOR_FOOD, 1f, score / 5f);
     }
 
 }

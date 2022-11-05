@@ -3,9 +3,6 @@ package net.thisisnico.lolz.buildbattle;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.checkerframework.checker.guieffect.qual.SafeEffect;
 
 import java.util.HashMap;
 
@@ -19,6 +16,7 @@ public class Plot {
     @Getter
     private final Location location;
 
+    @Getter
     private final HashMap<String, Integer> scores = new HashMap<>();
 
     public Plot(String owner, Location location) {

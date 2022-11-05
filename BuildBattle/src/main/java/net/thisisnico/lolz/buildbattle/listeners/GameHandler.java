@@ -30,6 +30,8 @@ public class GameHandler implements Listener {
         if (e.getPlayer().isOp()) {
             e.getPlayer().getInventory().addItem(Game.getStartGameItem().getItemStack());
         }
+
+        Game.getBar().addPlayer(e.getPlayer());
     }
 
     @EventHandler
