@@ -2,6 +2,7 @@ package net.thisisnico.lolz.buildbattle;
 
 import lombok.Getter;
 import net.kyori.adventure.title.Title;
+import net.thisisnico.lolz.bedwars.WorldEditStuff;
 import net.thisisnico.lolz.bukkit.utils.ClickableItem;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
@@ -16,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class Game {
     @Getter
@@ -79,6 +81,8 @@ public class Game {
         bar.setTitle(theme);
         bar.setProgress(1.0f);
 
+        List<Location> locations = new ArrayList<>();
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (isTournament && DatabaseAdapter.getUser(player).isAdmin()) {
                 player.setGameMode(GameMode.SPECTATOR);
@@ -92,6 +96,7 @@ public class Game {
 
             players.add(player.getName());
             player.teleport(location);
+            locations.add(location.clone());
             player.setGameMode(GameMode.CREATIVE);
             player.setAllowFlight(true);
             player.setFlying(false);
@@ -103,6 +108,8 @@ public class Game {
 
             player.showTitle(Title.title(Component.color("&a" + theme), Component.color("&eУ вас есть 5 минут на постройку!")));
         }
+
+        WorldEditStuff.load("plot", (Location[]) locations.toArray());
 
         final int time = 5 * 60 * 20;
         final int[] timer = {0};
