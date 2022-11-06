@@ -35,6 +35,8 @@ public class Game {
     @Getter
     private static final ArrayList<ResourceGenerator> generators = new ArrayList<>();
 
+    public static final boolean tournamentMode = false;
+
     private static boolean isRunning = false;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -67,9 +69,11 @@ public class Game {
                 broadcast("Кровать команды " + team.getName() + " была уничтожена игроком " + p.getName() + "!");
                 team.setCoolDudeWhoBrokeDaBed(p);
 
-                var clan = DatabaseAdapter.getClan(p);
-                if (clan == null) p.sendMessage(Component.color("&cТы не в клане"));
-                else clan.givePoints(Const.POINTS_FOR_BED);
+                if(Game.tournamentMode) {
+                    var clan = DatabaseAdapter.getClan(p);
+                    if (clan == null) p.sendMessage(Component.color("&cТы не в клане"));
+                    else clan.givePoints(Const.POINTS_FOR_BED);
+                }
 
                 return true;
             }

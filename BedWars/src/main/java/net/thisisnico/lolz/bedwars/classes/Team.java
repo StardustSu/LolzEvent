@@ -51,10 +51,6 @@ public class Team {
         }
     }
 
-//    // Надбавка баллов за:
-//    private int bedsDestroyed = 0; // Уничтожения кроватей
-//    private int playersFinalKilled = 0; // Финальные убийства игроков
-
     public void addPlayer(Player player) {
         players.add(player);
     }
@@ -90,17 +86,4 @@ public class Team {
         return checkBedLocation(x - 1, y, z);
     }
 
-//    public void addFinalKill() {
-//        playersFinalKilled++;
-//    }
-//
-//    public void addBedsDestroyed() {
-//        bedsDestroyed++;
-//    }
-//
-//    public int getPointsCount() {
-//        final int pointsPerBed = 5;
-//        final int pointsPerFinalKill = 3;
-//        return bedsDestroyed * pointsPerBed + playersFinalKilled * pointsPerFinalKill;
-//    }
 }
