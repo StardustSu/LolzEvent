@@ -108,7 +108,7 @@ public class Game {
             player.showTitle(Title.title(Component.color("&a" + theme), Component.color("&eУ вас есть 5 минут на постройку!")));
         }
 
-        WorldEditStuff.load("plot", (Location[]) locations.toArray());
+        WorldEditStuff.load("plot", locations.toArray(Location[]::new));
 
         final int time = 5 * 60 * 20;
         final int[] timer = {0};
@@ -189,7 +189,7 @@ public class Game {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     assert player != null;
                     p.sendMessage("§a§lBuildBattle §7| §aПостройка игрока " + player.getName());
-                    p.teleport(plot.getLocation().clone().add(0, 10, -16));
+                    p.teleport(currentPlot.getLocation().clone().add(0, 10, -16));
                 }
 
                 tempPlots.remove(plot);

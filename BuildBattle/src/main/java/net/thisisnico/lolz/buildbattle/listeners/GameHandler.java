@@ -1,5 +1,6 @@
 package net.thisisnico.lolz.buildbattle.listeners;
 
+import net.thisisnico.lolz.buildbattle.BuildBattle;
 import net.thisisnico.lolz.buildbattle.Game;
 import net.thisisnico.lolz.buildbattle.GameState;
 import net.thisisnico.lolz.buildbattle.Plot;
@@ -22,9 +23,14 @@ public class GameHandler implements Listener {
     void onJoin(PlayerJoinEvent e) {
         e.getPlayer().getInventory().clear();
         e.getPlayer().setGameMode(GameMode.SURVIVAL);
-        if (Game.isStarted() &&
-                (!Game.isPlayer(e.getPlayer().getName()) || DatabaseAdapter.getUser(e.getPlayer()).isAdmin())) {
-            e.getPlayer().setGameMode(GameMode.SPECTATOR);
+        if (Game.isStarted()) {
+
+            if (!Game.isPlayer(e.getPlayer().getName()) || DatabaseAdapter.getUser(e.getPlayer()).isAdmin()){
+                e.getPlayer().setGameMode(GameMode.SPECTATOR);
+            }
+            else{
+                e.getPlayer().setGameMode(GameMode.CREATIVE);
+            }
         }
 
         if (e.getPlayer().isOp()) {
@@ -43,20 +49,20 @@ public class GameHandler implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     void onPlayerMove(PlayerMoveEvent e) {
-        e.setCancelled(check(e.getPlayer(), e.getTo()));
+        e.setCancelled(check(e.getPlayer(), e.getTo(), false));
     }
 
     @EventHandler(ignoreCancelled = true)
     void onPlayerBreak(BlockBreakEvent e) {
-        e.setCancelled(check(e.getPlayer(), e.getBlock().getLocation()));
+        e.setCancelled(check(e.getPlayer(), e.getBlock().getLocation(), true));
     }
 
     @EventHandler(ignoreCancelled = true)
     void onPlayerPlace(BlockPlaceEvent e) {
-        e.setCancelled(check(e.getPlayer(), e.getBlockPlaced().getLocation()));
+        e.setCancelled(check(e.getPlayer(), e.getBlockPlaced().getLocation(), true));
     }
 
-    boolean check(Player player, Location to) {
+    boolean check(Player player, Location to, boolean isBlockCheck) {
         if (Game.isStarted() && Game.isPlayer(player.getName())) {
             Plot plot = null;
             if (Game.getState() == GameState.BUILDING) {
@@ -70,7 +76,14 @@ public class GameHandler implements Listener {
 
             Location loc = plot.getLocation();
 
-            if (Math.abs(to.getX() - loc.getX()) > 16 || Math.abs(to.getZ() - loc.getZ()) > 16
+            var offset = Game.getState() == GameState.BUILDING ? 16 : 18;
+
+            if (!isBlockCheck && Game.getState() == GameState.BUILDING) {
+                loc = loc.clone();
+                loc.add(0.5, 0.5, 0.5);
+            }
+
+            if (Math.abs(to.getX() - loc.getX()) > offset || Math.abs(to.getZ() - loc.getZ()) > offset
                     || to.getY() < loc.getY() - 1 || to.getY() >= Plot.getMaxHeight()) {
                 player.sendMessage("§cВы не можете выйти за пределы строительной площадки!");
                 return true;
