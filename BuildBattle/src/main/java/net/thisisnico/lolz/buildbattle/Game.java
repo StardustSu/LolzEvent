@@ -2,7 +2,6 @@ package net.thisisnico.lolz.buildbattle;
 
 import lombok.Getter;
 import net.kyori.adventure.title.Title;
-import net.thisisnico.lolz.bedwars.WorldEditStuff;
 import net.thisisnico.lolz.bukkit.utils.ClickableItem;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
