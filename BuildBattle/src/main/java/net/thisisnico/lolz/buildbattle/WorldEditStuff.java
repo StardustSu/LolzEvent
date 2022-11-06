@@ -1,4 +1,4 @@
-package net.thisisnico.lolz.bedwars;
+package net.thisisnico.lolz.buildbattle;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
