@@ -85,9 +85,6 @@ public class Game {
 
         List<Location> locations = new ArrayList<>();
 
-        var clans = new ArrayList<Clan>();
-        Database.getClans().find().forEach(clans::add);
-
         var users = new ArrayList<User>();
         Database.getUsers().find().forEach(users::add);
 
@@ -103,14 +100,17 @@ public class Game {
                 continue;
             }
 
-            // get plot name == user.getClan()
-            var plot = plots.stream().filter(p -> p.getName().equalsIgnoreCase(user.getClan())).findFirst().orElse(null);
+            Plot plot = tournamentMode ?
+                    plots.stream().filter(p -> p.getName().equalsIgnoreCase(user.getClan())).findFirst().orElse(null) :
+                    null;
 
             // Каждый плот размером 32 на 32 с запасом для красивых стен
             location.add(0, 0, 50);
 
             if (plot == null) {
-                plot = new Plot(user.getClan(), location.clone(), player.getName());
+                plot = new Plot(
+                        tournamentMode ? user.getClan() : player.getName(),
+                        location.clone(), player.getName());
                 plots.add(plot);
             } else {
                 plot.getOwners().add(player.getName());
@@ -140,9 +140,9 @@ public class Game {
                 task.cancel();
                 return;
             }
-            timer[0] ++;
+            timer[0]++;
 
-            bar.setProgress(1-((double) timer[0] / time));
+            bar.setProgress(1 - ((double) timer[0] / time));
 
             if (timer[0] >= time) {
                 task.cancel();
