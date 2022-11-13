@@ -6,7 +6,9 @@ import net.thisisnico.lolz.bedwars.classes.ResourceGenerator;
 import net.thisisnico.lolz.bedwars.classes.Team;
 import net.thisisnico.lolz.bedwars.classes.TeamColor;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
+import net.thisisnico.lolz.bukkit.utils.ClickableItem;
 import net.thisisnico.lolz.bukkit.utils.Component;
+import net.thisisnico.lolz.bukkit.utils.ItemUtil;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import net.thisisnico.lolz.common.database.Clan;
 import net.thisisnico.lolz.common.database.Database;
@@ -24,6 +26,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
+
+    @Getter
+    private static final ClickableItem startGameItem = ClickableItem.of(ItemUtil.generate(Material.DIAMOND, 1,
+            "&a&lBedWars", "&7Click to start the game!"), p -> startTimer());
 
     @Getter
     private static Arena arena;

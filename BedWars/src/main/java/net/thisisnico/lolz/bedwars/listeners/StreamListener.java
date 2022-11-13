@@ -42,6 +42,9 @@ public class StreamListener implements Listener {
                 Game.respawn(e.getPlayer(), 2);
             }
         } else {
+            if(e.getPlayer().isOp())
+                e.getPlayer().getInventory().addItem(Game.getStartGameItem().getItemStack());
+
             e.getPlayer().teleport(Game.getArena().getSpectatorSpawnLocation());
             e.getPlayer().setGameMode(GameMode.ADVENTURE);
             e.getPlayer().getInventory().setContents(new ItemStack[] {});
