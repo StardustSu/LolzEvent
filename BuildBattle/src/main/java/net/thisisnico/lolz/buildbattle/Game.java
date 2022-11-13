@@ -5,7 +5,9 @@ import net.kyori.adventure.title.Title;
 import net.thisisnico.lolz.bukkit.utils.ClickableItem;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
-import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
+import net.thisisnico.lolz.common.database.Clan;
+import net.thisisnico.lolz.common.database.Database;
+import net.thisisnico.lolz.common.database.User;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -52,7 +54,7 @@ public class Game {
         if (!isStarted()) return null;
 
         for (Plot plot : plots) {
-            if (plot.getOwner().equals(player)) {
+            if (plot.getOwners().contains(player)) {
                 return plot;
             }
         }
@@ -83,16 +85,36 @@ public class Game {
 
         List<Location> locations = new ArrayList<>();
 
+        var clans = new ArrayList<Clan>();
+        Database.getClans().find().forEach(clans::add);
+
+        var users = new ArrayList<User>();
+        Database.getUsers().find().forEach(users::add);
+
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (tournamentMode && DatabaseAdapter.getUser(player).isAdmin()) {
+            var user = users.stream().filter(u -> u.getName().equalsIgnoreCase(player.getName())).findFirst().orElse(null);
+            if (user == null) {
+                player.kick(Component.color("&c&lWTF????"));
+                continue;
+            }
+
+            if (tournamentMode && user.isAdmin()) {
                 player.setGameMode(GameMode.SPECTATOR);
                 continue;
             }
 
+            // get plot name == user.getClan()
+            var plot = plots.stream().filter(p -> p.getName().equalsIgnoreCase(user.getClan())).findFirst().orElse(null);
+
             // Каждый плот размером 32 на 32 с запасом для красивых стен
             location.add(0, 0, 50);
 
-            plots.add(new Plot(player.getName(), location.clone()));
+            if (plot == null) {
+                plot = new Plot(user.getClan(), location.clone(), player.getName());
+                plots.add(plot);
+            } else {
+                plot.getOwners().add(player.getName());
+            }
 
             players.add(player.getName());
             player.teleport(location);
@@ -183,13 +205,11 @@ public class Game {
                 }
 
                 var plot = plotIter.next();
-                Player player = Bukkit.getPlayerExact(plot.getOwner());
 
                 currentPlot = plot;
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    assert player != null;
-                    p.sendMessage("§a§lBuildBattle §7| §aПостройка игрока " + player.getName());
+                    p.sendMessage("§a§lBuildBattle §7| §aПостройка клана " + plot.getName());
                     p.teleport(currentPlot.getLocation().clone().add(0, 10, -16));
                 }
 
@@ -208,28 +228,33 @@ public class Game {
         // Показать победителя
         for (int i = 0; i < sortedPlots.size(); i++) {
             var plot = sortedPlots.get(i);
-            var player = Bukkit.getOfflinePlayerIfCached(plot.getOwner());
-            assert player != null;
+            var players = plot.getOwners().stream().map(Bukkit::getOfflinePlayerIfCached).toList();
 
             var score = plot.getScores().values().size() != 0 ? plot.getScore() / plot.getScores().values().size() : 0;
             if (score != 0) {
-                if (player.getPlayer() != null) {
-                    player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка заняла " + (i + 1) + " место!");
-                    player.getPlayer().sendMessage("§a§lBuildBattle §7| §aСредняя оценка: " + score);
+                for (OfflinePlayer player : players) {
+                    if (player.getPlayer() != null) {
+                        player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка заняла " + (i + 1) + " место!");
+                        player.getPlayer().sendMessage("§a§lBuildBattle §7| §aСредняя оценка: " + score);
+                    }
                 }
 
                 if (tournamentMode)
-                    DatabaseAdapter.getClan(player).givePoints(score * 10);
+                    Clan.get(plot.getName()).givePoints(score * 10);
             } else {
-                if (player.getPlayer() != null)
-                    player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка не набрала ни одной оценки!");
+                for (OfflinePlayer player : players) {
+                    if (player.getPlayer() != null) {
+                        player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка заняла " + (i + 1) + " место!");
+                        player.getPlayer().sendMessage("§a§lBuildBattle §7| §aСредняя оценка: " + score);
+                    }
+                }
             }
 
             if (i < 4) {
-                Bukkit.broadcast(Component.color("§a§lBuildBattle §7| §a" + (i + 1) + " место: " + player.getName() + " (" + plot.getScore() + " очков)"));
+                Bukkit.broadcast(Component.color("§a§lBuildBattle §7| §a" + (i + 1) + " место: " + plot.getName() + " (" + plot.getScore() + " очков)"));
 
                 if (tournamentMode)
-                    DatabaseAdapter.getClan(player).givePoints((3 - i) * 10);
+                    Clan.get(plot.getName()).givePoints((3 - i) * 10);
             }
         }
 
@@ -268,8 +293,7 @@ public class Game {
         for (String player : players) {
             if (player.equals(p)) {
                 for (Plot plot : plots) {
-                    if (plot.getOwner().equals(p)) {
-                        plot.setOwner(player);
+                    if (plot.getOwners().contains(p)) {
                         break;
                     }
                 }

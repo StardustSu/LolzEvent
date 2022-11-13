@@ -2,6 +2,7 @@ package net.thisisnico.lolz.buildbattle;
 
 import lombok.Getter;
 import net.thisisnico.lolz.buildbattle.listeners.GameHandler;
+import net.thisisnico.lolz.buildbattle.listeners.StartHandler;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +24,7 @@ public final class BuildBattle extends JavaPlugin {
 
         BukkitUtils.instantiate(this);
         BukkitUtils.registerListener(new GameHandler());
+        BukkitUtils.registerListener(new StartHandler());
 
         Game.init();
     }

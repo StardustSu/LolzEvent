@@ -14,6 +14,10 @@ public class Sync {
         redis.publish("lolz:points", clan.getTag() + ":" + delta);
     }
 
+    public static void sendClanRequest(String admin, Clan clan, int count) {
+        redis.publish("lolz:send", admin+":"+count+":"+clan.getTag());
+    }
+
     public static void registerPointsUpdate(BiConsumer<Clan, Integer> callback) {
         redis.subscribe(new JedisPubSub() {
             @Override
@@ -31,6 +35,25 @@ public class Sync {
 
     public static void registerPointsUpdateAsync(BiConsumer<Clan, Integer> callback) {
         new Thread(() -> registerPointsUpdate(callback)).start();
+    }
+
+    public static void registerClanRequest(BiConsumer<String, Clan> callback) {
+        redis.subscribe(new JedisPubSub() {
+            @Override
+            public void onMessage(String channel, String message) {
+
+                var s = message.split(":");
+                var adminAndCount = s[0]+":"+s[1];
+                var tag = s[2];
+                var clan = Clan.get(tag);
+                callback.accept(adminAndCount, clan);
+
+            }
+        }, "lolz:send");
+    }
+
+    public static void registerClanRequestAsync(BiConsumer<String, Clan> callback) {
+        new Thread(() -> registerClanRequest(callback)).start();
     }
 
 }

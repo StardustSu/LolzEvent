@@ -12,6 +12,7 @@ import cloud.commandframework.paper.PaperCommandManager;
 import lombok.Getter;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.thisisnico.lolz.bukkit.commands.DebugCommand;
+import net.thisisnico.lolz.bukkit.commands.WarpCommand;
 import net.thisisnico.lolz.bukkit.handlers.SystemHandler;
 import net.thisisnico.lolz.bukkit.utils.ScoreboardUtils;
 import org.bukkit.command.CommandSender;
@@ -106,6 +107,7 @@ public class BukkitUtils {
                 ).apply(commandManager, c -> c);
 
         annotationParser.parse(new DebugCommand());
+        annotationParser.parse(new WarpCommand());
     }
 
     public static <T> void registerCommand(final T command) {

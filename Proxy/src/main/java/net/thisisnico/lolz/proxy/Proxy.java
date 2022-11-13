@@ -93,6 +93,38 @@ public class Proxy {
             }
         });
 
+        Sync.registerClanRequestAsync((adminAndCount, clan) -> {
+            // separate admin and count
+            var adminName = adminAndCount.split(" ")[0];
+            var count = Integer.parseInt(adminAndCount.split(" ")[1]);
+
+            // get admin player
+            var admin = server.getPlayer(adminName).orElseThrow();
+
+            logger.info("Received clan request for clan " + clan.getTag() + " with count " + count);
+
+            // collect online players
+            var players = new ArrayList<Player>();
+            for (String member : clan.getMembers()) {
+                var player = server.getPlayer(member).orElse(null);
+                if (player == null) continue;
+
+                players.add(player);
+            }
+
+            if (players.size() < count) {
+                admin.sendMessage(Component.text("§cНедостаточно игроков клана "+clan.getTag()+" для варпа!"));
+                return;
+            }
+
+            // teleport *count* random players to admin's server
+            var server = admin.getCurrentServer().orElseThrow().getServer();
+            for (int i = 0; i < count; i++) {
+                var player = players.remove((int) (Math.random() * players.size()));
+                player.createConnectionRequest(server).fireAndForget();
+            }
+        });
+
         logger.info("Started Points listener");
 
         annotationParser.parse(new ClanCommand());
