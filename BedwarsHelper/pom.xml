@@ -5,24 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.thisisnico.lolz</groupId>
-    <artifactId>BedWars</artifactId>
+    <artifactId>BedwarsHelper</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BedWars</name>
+    <name>BedwarsHelper</name>
 
     <description>none</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>space-maven</id>
-            <url>https://maven.pkg.jetbrains.space/stardustproj/p/sd/maven</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>
@@ -69,10 +62,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>enginehub</id>
-            <url>https://maven.enginehub.org/repo/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -90,12 +79,6 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.19.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-bukkit</artifactId>
-            <version>7.2.9</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

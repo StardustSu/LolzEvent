@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public enum TeamColor {
-    RED    (NamedTextColor.RED         ),
-    BLUE   (NamedTextColor.BLUE        ),
-    GREEN  (NamedTextColor.GREEN       ),
-    YELLOW (NamedTextColor.YELLOW      ),
-    AQUA   (NamedTextColor.AQUA        ),
-    PINK   (NamedTextColor.LIGHT_PURPLE),
-    WHITE  (NamedTextColor.WHITE       ),
-    GRAY   (NamedTextColor.DARK_GRAY   );
+    RED    (NamedTextColor.RED         , 'c'),
+    BLUE   (NamedTextColor.BLUE        , '9'),
+    GREEN  (NamedTextColor.GREEN       , 'a'),
+    YELLOW (NamedTextColor.YELLOW      , 'e'),
+    AQUA   (NamedTextColor.AQUA        , 'b'),
+    PINK   (NamedTextColor.LIGHT_PURPLE, 'd'),
+    WHITE  (NamedTextColor.WHITE       , 'f'),
+    GRAY   (NamedTextColor.DARK_GRAY   , '8');
 
     private static final ArrayList<TeamColor> takenColors = new ArrayList<>();
     private static final Random random = new Random();
@@ -22,8 +22,12 @@ public enum TeamColor {
     @Getter
     private final NamedTextColor color;
 
-    TeamColor(NamedTextColor color) {
+    @Getter
+    private final char code;
+
+    TeamColor(NamedTextColor color, char code) {
         this.color = color;
+        this.code = code;
     }
 
     public static TeamColor getRandomColor() {

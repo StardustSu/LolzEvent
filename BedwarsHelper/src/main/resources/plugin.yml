@@ -1,0 +1,6 @@
+name: BedwarsHelper
+version: '${project.version}'
+main: net.thisisnico.lolz.bedwarshelper.BedwarsHelper
+api-version: 1.19
+authors: [ thisisnico ]
+description: none

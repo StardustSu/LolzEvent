@@ -43,7 +43,7 @@ public class ResourceGenerator {
             }
         }.runTaskTimer(BukkitUtils.getPlugin(), 0, seconds * 20L);
 
-        hologram = location.getWorld().spawn(location.clone().add(0, 2, 0), ArmorStand.class);
+        hologram = location.getWorld().spawn(location.clone(), ArmorStand.class);
         hologram.setCustomNameVisible(true);
         hologram.customName(Component.color("&eГенератор ресурсов"));
         hologram.setGravity(false);
