@@ -2,28 +2,28 @@ package net.thisisnico.lolz.bedwars.listeners;
 
 import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
+import net.thisisnico.lolz.bukkit.utils.Component;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class StartHandler {
+public class StartHandler implements Listener {
     private static int countdown = 0;
-    private static int teamsCount = 0;
     private static int playersCount = 0;
 
     private static final int MAX_PLAYERS = 32;
-    private static final int MAX_TEAMS = 8;
-    private static final int MIN_PLAYERS = 8;
+    private static final int MIN_PLAYERS = 5;
 
     private static final BukkitRunnable COUNTDOWN = new BukkitRunnable() {
         @Override
         public void run() {
-            if(Game.tournamentMode)
+            if(Game.isTournamentMode())
                 cancel();
 
             if (countdown == 0) {
-                Game.start();
+                Game.startTimer();
                 cancel();
             } else {
                 countdown--;
@@ -33,34 +33,24 @@ public class StartHandler {
     };
 
     public static void startCountdown() {
-        if(Game.tournamentMode)
+        if(Game.isTournamentMode())
             return;
 
-        countdown = 60;
+        countdown = 30;
         COUNTDOWN.run();
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        if(Game.tournamentMode)
+        if(Game.isTournamentMode())
             return;
 
         if (countdown == 0) {
-            e.getPlayer().sendMessage("§cThe game is already starting!");
-            e.getPlayer().kickPlayer("§cThe game is already starting!");
+            e.getPlayer().kick(Component.color("§cИгра уже началась!"));
         }
 
         if (playersCount >= MAX_PLAYERS) {
-            e.getPlayer().sendMessage("§cThe game is full!");
-            e.getPlayer().kickPlayer("§cThe game is full!");
-        }
-
-        if(teamsCount > MAX_TEAMS){
-            e.getPlayer().sendMessage("§cThe game is full!");
-            e.getPlayer().kickPlayer("§cThe game is full!");
-        }
-        else if(teamsCount == MAX_TEAMS){
-            // TODO: Check if the team is full
+            e.getPlayer().kick(Component.color("§cИгра уже заполнена!"));
         }
 
         playersCount++;
@@ -69,26 +59,17 @@ public class StartHandler {
             startCountdown();
         }
 
-        e.getPlayer().sendMessage("§aYou joined the game! §7(" + playersCount + "/" + MAX_PLAYERS + ")");
+        e.getPlayer().sendMessage("§aВы присоеденились к игре! §7(" + playersCount + "/" + MAX_PLAYERS + ")");
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        if(Game.tournamentMode)
+        if(Game.isTournamentMode())
             return;
-
-        if (countdown == 0) {
-            e.getPlayer().sendMessage("§cThe game is already starting!");
-            e.getPlayer().kickPlayer("§cThe game is already starting!");
-        }
 
         playersCount--;
 
-        // TODO: Check if the team is empty
-        // TODO: Decrease the teamsCount if the team is not empty
-
         if (playersCount < MIN_PLAYERS) {
-            countdown = 60;
             COUNTDOWN.cancel();
         }
     }

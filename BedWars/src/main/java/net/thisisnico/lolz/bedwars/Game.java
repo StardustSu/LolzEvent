@@ -18,13 +18,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.ServerOperator;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Game {
 
@@ -40,6 +37,9 @@ public class Game {
     private static final HashMap<ArmorStand, Location> tpArmorStandsBack = new HashMap<>();
 
     private static boolean isRunning = false;
+
+    @Getter
+    private static final boolean tournamentMode = false;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isRunning() {
@@ -89,6 +89,9 @@ public class Game {
                 team.getPlayers().removeIf(player -> Bukkit.getPlayerExact(player) == null);
                 if (team.getPlayers().size() == 0) eliminateTeam(team);
 
+                if (!tournamentMode)
+                    return true;
+
                 var clan = DatabaseAdapter.getClan(p);
                 if (clan == null) p.sendMessage(Component.color("&cТы не в клане"));
                 else {
@@ -116,7 +119,7 @@ public class Game {
             for (String tag : entity.getScoreboardTags()) {
                 if (tag.startsWith("generator_")) {
                     var seconds = Integer.parseInt(tag.split("_")[1]);
-                    var block = entity.getLocation().getBlock().getRelative(0,-1,0);
+                    var block = entity.getLocation().getBlock().getRelative(0, -1, 0);
                     generators.add(new ResourceGenerator(entity.getLocation(), new ItemStack(switch (block.getType()) {
                         case BRICKS -> Material.BRICK;
                         case IRON_BLOCK -> Material.IRON_INGOT;
@@ -161,6 +164,9 @@ public class Game {
         var users = new ArrayList<User>();
         Database.getUsers().find().forEach(users::add);
 
+        // Clan tag -> Players
+        var huy = new HashMap<String, ArrayList<Player>>();
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             var user = users.stream().filter(u -> u.getName().equalsIgnoreCase(player.getName())).findFirst().orElse(null);
             assert user != null;
@@ -172,26 +178,90 @@ public class Game {
             }
 
             Clan clan = null;
-            if (user.hasClan()) clan = clans.stream().filter(c -> c.getTag().equalsIgnoreCase(user.getClan())).findFirst().orElse(null);
-            if (clan == null) {
+            String clanTag = "none";
+            if (user.hasClan()) {
+                clan = clans.stream().filter(c -> c.getTag().equalsIgnoreCase(user.getClan())).findFirst().orElse(null);
+                if (clan != null) clanTag = clan.getTag();
+            }
+            if (clan == null && tournamentMode) {
                 player.kick(Component.color("&cТы не в клане"));
                 continue;
+            }
+
+            if (!tournamentMode) {
+                if (!huy.containsKey(clanTag)) {
+                    huy.put(clanTag, new ArrayList<>());
+                }
+                huy.get(clanTag).add(player);
             }
 
             player.setFoodLevel(20);
             player.setHealth(20);
             player.setGameMode(GameMode.SURVIVAL);
-            player.getInventory().setContents(new ItemStack[] {});
+            player.getInventory().setContents(new ItemStack[]{});
 
-            Clan finalClan = clan;
-            var team = teams.stream().filter(t -> t.getName().equalsIgnoreCase(finalClan.getTag())).findFirst().orElse(null);
-            if (team == null) {
-                team = new Team(clan.getTag());
+            if (tournamentMode) {
+                Clan finalClan = clan;
+                var team = teams.stream().filter(t -> t.getName().equalsIgnoreCase(finalClan.getTag())).findFirst().orElse(null);
+                if (team == null) {
+                    team = new Team(clan.getTag());
+                    teams.add(team);
+                }
+
+                team.addPlayer(player);
+                player.teleport(team.getSpawnLocation());
+            }
+        }
+
+        // TODO: split players into teams
+        if (!tournamentMode) {
+            // 4 players per team
+            for (var entry : huy.entrySet()) {
+                var players = entry.getValue();
+                var clanTag = entry.getKey();
+
+                if (players.size() != 4)
+                    return;
+
+                var team = new Team(clanTag);
                 teams.add(team);
+                for (Player player : players) {
+                    team.addPlayer(player);
+                    player.teleport(team.getSpawnLocation());
+                }
+
+                huy.remove(clanTag);
             }
 
-            team.addPlayer(player);
-            player.teleport(team.getSpawnLocation());
+            huy = huy.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.comparingInt(ArrayList::size)))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+            // another retard who did not join with their friends
+            for(int i = 0; i < huy.size(); i++) {
+                var clanTag = huy.keySet().toArray(String[]::new)[i];
+                var players = huy.get(clanTag);
+
+                int playerCount = players.size();
+
+                for(int j = i + 1; j < huy.size(); j++){
+                    var players2 = huy.get(huy.keySet().toArray(String[]::new)[j]);
+                    if(players2.size() + playerCount <= 4){
+                        players.addAll(players2);
+                        huy.remove(huy.keySet().toArray(String[]::new)[j]);
+                        j--;
+                        playerCount += players2.size();
+                    }
+                    if(playerCount == 4) break;
+                }
+
+                var team = new Team(clanTag);
+                for (Player player : players) {
+                    team.addPlayer(player);
+                    player.teleport(team.getSpawnLocation());
+                }
+                teams.add(team);
+            }
         }
 
         for (ArmorStand entity : arena.getWorld().getEntitiesByClass(ArmorStand.class)) {
@@ -238,7 +308,7 @@ public class Game {
         }
         tpArmorStandsBack.clear();
     }
-    
+
     public static void kill(Player player, boolean respawn) {
         Bukkit.getScheduler().runTaskLater(BedWars.getInstance(), () -> {
             player.setGameMode(GameMode.SPECTATOR);
@@ -265,10 +335,11 @@ public class Game {
         player.setFlying(true);
 
         if (team.isBedDestroyed()) {
-            if (killer != null) {
+            if (killer != null && tournamentMode) {
                 var clan = DatabaseAdapter.getClan(killer);
                 if (clan == null) {
-                    if (killer.isOnline()) Objects.requireNonNull(killer.getPlayer()).sendMessage(Component.color("&cТы не в клане"));
+                    if (killer.isOnline())
+                        Objects.requireNonNull(killer.getPlayer()).sendMessage(Component.color("&cТы не в клане"));
                     return;
                 }
                 clan.givePoints(Const.POINTS_FOR_FINAL_KILL);
@@ -277,8 +348,7 @@ public class Game {
 
             team.getPlayers().remove(player.getName());
             eliminateTeam(team);
-        }
-        else if (respawn) respawn(player, 1);
+        } else if (respawn) respawn(player, 1);
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             Coloring.updateColors(onlinePlayer);
@@ -297,7 +367,7 @@ public class Game {
         if (teams.size() == 1) {
             for (String offline : teams.get(0).getPlayers()) {
                 if (Bukkit.getPlayerExact(offline) != null) {
-                    Bukkit.getPlayerExact(offline).getInventory().setArmorContents(new ItemStack[] {});
+                    Bukkit.getPlayerExact(offline).getInventory().setArmorContents(new ItemStack[]{});
                 }
             }
             Bukkit.broadcast(Component.color("&f"));
@@ -305,7 +375,7 @@ public class Game {
             Bukkit.broadcast(Component.color("&f"));
             Bukkit.broadcast(Component.color(teams.get(0).getName()).color(teams.get(0).getColor().getColor())
                     .append(Component.color(" &7 - &b&lПОБЕДИТЕЛЬ")));
-            Bukkit.broadcast(Component.center("     &d(+"+(Const.POINTS_FOR_WIN + teams.get(0).getScore())+" очков)"));
+            Bukkit.broadcast(Component.center("     &d(+" + (Const.POINTS_FOR_WIN + teams.get(0).getScore()) + " очков)"));
             Bukkit.broadcast(Component.color("&f"));
             Bukkit.broadcast(Component.color("&9&m========================="));
             Bukkit.broadcast(Component.color("&f"));

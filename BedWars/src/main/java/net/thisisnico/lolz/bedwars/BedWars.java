@@ -5,6 +5,7 @@ import net.thisisnico.lolz.bedwars.classes.TeamColor;
 import net.thisisnico.lolz.bedwars.commands.ReloadArenaCommand;
 import net.thisisnico.lolz.bedwars.commands.StartGameCommand;
 import net.thisisnico.lolz.bedwars.listeners.GameHandler;
+import net.thisisnico.lolz.bedwars.listeners.StartHandler;
 import net.thisisnico.lolz.bedwars.listeners.StreamListener;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.ScoreboardUtils;
@@ -23,6 +24,7 @@ public final class BedWars extends JavaPlugin {
         BukkitUtils.instantiate(this);
         instance = this;
         BukkitUtils.registerListener(new GameHandler());
+        BukkitUtils.registerListener(new StartHandler());
         BukkitUtils.registerListener(new StreamListener());
         Game.init();
         BukkitUtils.getAnnotationParser().parse(new ReloadArenaCommand());
