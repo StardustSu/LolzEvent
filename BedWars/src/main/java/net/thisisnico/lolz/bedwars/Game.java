@@ -45,7 +45,7 @@ public class Game {
     private static boolean isRunning = false;
 
     @Getter
-    private static final boolean tournamentMode = false;
+    private static final boolean tournamentMode = true;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isRunning() {

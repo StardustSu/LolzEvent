@@ -15,6 +15,7 @@ import net.thisisnico.lolz.bukkit.commands.DebugCommand;
 import net.thisisnico.lolz.bukkit.commands.WarpCommand;
 import net.thisisnico.lolz.bukkit.handlers.SystemHandler;
 import net.thisisnico.lolz.bukkit.utils.ScoreboardUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -39,6 +40,8 @@ public class BukkitUtils {
         if (BukkitUtils.plugin != null)
             throw new IllegalStateException("BukkitUtils is already instantiated!");
         BukkitUtils.plugin = plugin;
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
 
         ScoreboardUtils.runUpdater();
 

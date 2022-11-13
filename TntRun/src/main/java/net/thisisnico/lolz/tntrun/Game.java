@@ -50,7 +50,7 @@ public class Game {
     private static BukkitTask task;
 
     @Getter
-    private static final boolean tournamentMode = false;
+    private static final boolean tournamentMode = true;
 
     public static void init() {
         world = Bukkit.getWorlds().get(0);

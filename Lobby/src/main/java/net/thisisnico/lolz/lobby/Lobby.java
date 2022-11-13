@@ -68,6 +68,8 @@ public final class Lobby extends JavaPlugin implements Listener {
             // add player to team
             team.addEntry(e.getPlayer().getName());
         }
+
+        e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation().clone().add(.5, 0, .5));
     }
 
     @EventHandler

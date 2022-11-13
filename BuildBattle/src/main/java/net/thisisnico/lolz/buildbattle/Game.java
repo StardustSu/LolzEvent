@@ -35,7 +35,7 @@ public class Game {
     private static String theme;
 
     @Getter
-    private static final boolean tournamentMode = false;
+    private static final boolean tournamentMode = true;
 
     @Getter
     private static BossBar bar;

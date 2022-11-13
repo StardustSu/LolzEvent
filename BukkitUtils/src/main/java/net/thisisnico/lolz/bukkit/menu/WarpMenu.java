@@ -15,7 +15,7 @@ public class WarpMenu extends InventoryMenu {
         var clans = Database.getClans().find();
         for (Clan clan : clans) {
             var item = ItemUtil.generate(Material.DIAMOND_BLOCK, 1, "&a"+clan.getTag(), clan.getMembers());
-            this.addItem(item, _p -> Sync.sendClanRequest(clan, count));
+            this.addItem(item, _p -> Sync.sendClanRequest(_p.getName(), clan, count));
         }
 
         open(p);

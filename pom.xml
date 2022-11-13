@@ -11,6 +11,7 @@
     <modules>
         <module>Common</module>
         <module>BukkitUtils</module>
+        <module>Lobby</module>
         <module>TntRun</module>
         <module>BuildBattle</module>
         <module>Proxy</module>
