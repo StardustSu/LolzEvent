@@ -14,7 +14,7 @@ public class StartHandler implements Listener {
     private static int playersCount = 0;
 
     private static final int MAX_PLAYERS = 32;
-    private static final int MIN_PLAYERS = 5;
+    private static final int MIN_PLAYERS = 8;
 
     private static final BukkitRunnable COUNTDOWN = new BukkitRunnable() {
         @Override
@@ -66,5 +66,9 @@ public class StartHandler implements Listener {
             return;
 
         playersCount--;
+
+        if (playersCount < MIN_PLAYERS) {
+            COUNTDOWN.cancel();
+        }
     }
 }
