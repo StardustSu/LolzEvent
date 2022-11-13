@@ -32,7 +32,8 @@ public class Game {
 
     private static String theme;
 
-    private static boolean isTournament = false;
+    @Getter
+    private static final boolean tournamentMode = false;
 
     @Getter
     private static BossBar bar;
@@ -83,7 +84,7 @@ public class Game {
         List<Location> locations = new ArrayList<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (isTournament && DatabaseAdapter.getUser(player).isAdmin()) {
+            if (tournamentMode && DatabaseAdapter.getUser(player).isAdmin()) {
                 player.setGameMode(GameMode.SPECTATOR);
                 continue;
             }
@@ -150,7 +151,7 @@ public class Game {
         state = GameState.VOTING;
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (isTournament) {
+            if (tournamentMode) {
                 if (p.isOp()) givePlayerVoteItems(p);
                 else p.setGameMode(GameMode.SPECTATOR);
                 continue;
@@ -216,7 +217,9 @@ public class Game {
                     player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка заняла " + (i + 1) + " место!");
                     player.getPlayer().sendMessage("§a§lBuildBattle §7| §aСредняя оценка: " + score);
                 }
-                DatabaseAdapter.getClan(player).givePoints(score * 10);
+
+                if (tournamentMode)
+                    DatabaseAdapter.getClan(player).givePoints(score * 10);
             } else {
                 if (player.getPlayer() != null)
                     player.getPlayer().sendMessage("§a§lBuildBattle §7| §aВаша постройка не набрала ни одной оценки!");
@@ -224,9 +227,9 @@ public class Game {
 
             if (i < 4) {
                 Bukkit.broadcast(Component.color("§a§lBuildBattle §7| §a" + (i + 1) + " место: " + player.getName() + " (" + plot.getScore() + " очков)"));
-                if (isTournament) {
+
+                if (tournamentMode)
                     DatabaseAdapter.getClan(player).givePoints((3 - i) * 10);
-                }
             }
         }
 
