@@ -49,6 +49,9 @@ public class Game {
 
     private static BukkitTask task;
 
+    @Getter
+    private static final boolean tournamentMode = false;
+
     public static void init() {
         world = Bukkit.getWorlds().get(0);
         spawn = world.getSpawnLocation();
@@ -66,7 +69,7 @@ public class Game {
             }
             utils.setLine(2, "&fИгроков: &a" + players.size());
             utils.setLine(3, "&a");
-            utils.setLine(4, "&fДвойных прыжков: &a"+players.get(utils.getPlayer())
+            utils.setLine(4, "&fДвойных прыжков: &a" + players.get(utils.getPlayer())
                     .updateAndGet(i -> Math.max(i, 0)));
         });
     }
@@ -107,8 +110,10 @@ public class Game {
                     return;
                 }
 
-                for (Player player : players.keySet()) {
-                    DatabaseAdapter.getClan(player).givePoints(5);
+                if (tournamentMode) {
+                    for (Player player : players.keySet()) {
+                        DatabaseAdapter.getClan(player).givePoints(5);
+                    }
                 }
             }
         }.runTaskTimer(BukkitUtils.getPlugin(), 0, 15 * 20L);
@@ -133,19 +138,22 @@ public class Game {
 
             var clan1 = DatabaseAdapter.getClan(winner);
             if (clan1 != null) {
-                clan1.givePoints(40);
+                if (tournamentMode)
+                    clan1.givePoints(40);
                 Bukkit.broadcast(Component.color("&c&l1. &b[&f" + clan1.getTag() + "&b] &a" + winner.getName() + " &6+40"));
             }
 
             var clan2 = DatabaseAdapter.getClan(p);
             if (clan2 != null) {
-                clan2.givePoints(15);
+                if (tournamentMode)
+                    clan2.givePoints(15);
                 Bukkit.broadcast(Component.color("&c&l2. &b[&f" + clan2.getTag() + "&b] &a" + p.getName() + " &6+15"));
             }
 
             var clan3 = DatabaseAdapter.getClan(top3);
             if (clan3 != null) {
-                clan3.givePoints(10);
+                if (tournamentMode)
+                    clan3.givePoints(10);
                 Bukkit.broadcast(Component.color("&c&l3. &b[&f" + clan3.getTag() + "&b] &a" + top3.getName() + " &6+10"));
             }
 
@@ -154,7 +162,7 @@ public class Game {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                player.showTitle(Title.title(Component.color("&b["+(clan1 != null ? clan1.getTag() : "noname")+"]"),
+                player.showTitle(Title.title(Component.color("&b[" + (clan1 != null ? clan1.getTag() : "noname") + "]"),
                         Component.color("&a" + winner.getName() + " &fпринёс победу клану")));
             }
         }
