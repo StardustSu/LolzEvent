@@ -217,12 +217,7 @@ public class Proxy {
                 .replaceAll("p", "р")
                 .replaceAll("e", "е")
                 .replaceAll("x", "х")
-                .replaceAll("b", "в")
-                .replaceAll("t", "т")
-                .replaceAll("ь", "b")
-                .replaceAll("h", "н")
-                .replaceAll("n", "п")
-                .replaceAll("m", "м");
+                .replaceAll("ь", "b");
 
         for (String banword : banwords) {
             if (banword == null) continue;
@@ -241,6 +236,9 @@ public class Proxy {
         if (!whitelist.contains(e.getPlayer().getUsername())) {
             e.getPlayer().disconnect(Component.text("У вас нет доступа на ивент!").color(NamedTextColor.RED));
         }
+
+        e.getPlayer().sendPlayerListHeaderAndFooter(Component.text("§f§lСка§1§lмим§c§l.РФ"),
+                Component.text("§fСоздано при поддержке §alolz.guru"));
     }
 
     private void registerCommandManager() {

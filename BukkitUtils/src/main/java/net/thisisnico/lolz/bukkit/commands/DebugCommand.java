@@ -3,8 +3,9 @@ package net.thisisnico.lolz.bukkit.commands;
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
-import net.thisisnico.lolz.common.network.Sync;
+import net.thisisnico.lolz.bukkit.BungeeUtils;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
+import net.thisisnico.lolz.common.network.Sync;
 import org.bukkit.entity.Player;
 
 public class DebugCommand {
@@ -23,6 +24,11 @@ public class DebugCommand {
         Sync.sendPointsUpdate(clan, delta);
 
         admin.sendMessage("§aUpdated points of §e" + clan.getTag() + "§a by §e" + delta);
+    }
+
+    @CommandMethod("legacy_server <name>")
+    public void legacyServer(final Player player, final @Argument("name") String name) {
+        BungeeUtils.sendPlayerToServer(player, name);
     }
 
 }

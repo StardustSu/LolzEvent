@@ -1,0 +1,7 @@
+name: Lobby
+version: '${project.version}'
+main: net.thisisnico.lolz.lobby.Lobby
+api-version: 1.19
+authors: [ thisisnico ]
+description: none
+website: website.com
