@@ -45,10 +45,6 @@ public class StartHandler implements Listener {
         if(Game.isTournamentMode())
             return;
 
-        if (countdown == 0) {
-            e.getPlayer().kick(Component.color("§cИгра уже началась!"));
-        }
-
         if (playersCount >= MAX_PLAYERS) {
             e.getPlayer().kick(Component.color("§cИгра уже заполнена!"));
         }
