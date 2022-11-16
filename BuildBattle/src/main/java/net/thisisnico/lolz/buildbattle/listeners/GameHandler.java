@@ -1,6 +1,5 @@
 package net.thisisnico.lolz.buildbattle.listeners;
 
-import net.thisisnico.lolz.buildbattle.BuildBattle;
 import net.thisisnico.lolz.buildbattle.Game;
 import net.thisisnico.lolz.buildbattle.GameState;
 import net.thisisnico.lolz.buildbattle.Plot;
@@ -33,7 +32,7 @@ public class GameHandler implements Listener {
             }
         }
 
-        if (e.getPlayer().isOp()) {
+        if (Game.isTournamentMode() && e.getPlayer().isOp()) {
             e.getPlayer().getInventory().addItem(Game.getStartGameItem().getItemStack());
         }
 

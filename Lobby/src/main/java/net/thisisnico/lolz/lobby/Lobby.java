@@ -1,13 +1,20 @@
 package net.thisisnico.lolz.lobby;
 
 import net.thisisnico.lolz.bukkit.BukkitUtils;
+import net.thisisnico.lolz.bukkit.BungeeUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
+import net.thisisnico.lolz.bukkit.utils.InventoryMenu;
+import net.thisisnico.lolz.bukkit.utils.ItemUtil;
 import net.thisisnico.lolz.bukkit.utils.ScoreboardUtils;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,6 +54,28 @@ public final class Lobby extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    @EventHandler
+    void onMove(PlayerMoveEvent e) {
+        if (!e.hasChangedBlock()) return;
+        var portal = e.getTo().getBlock().getType() == Material.NETHER_PORTAL;
+        if (!portal) return;
+
+        for (ArmorStand armorStand : e.getTo().getNearbyEntitiesByType(ArmorStand.class, 2)) {
+            if (armorStand.getScoreboardTags().contains("tnt")) {
+                new TeleportMenu(e.getPlayer(), "tnt");
+                return;
+            }
+            if (armorStand.getScoreboardTags().contains("bw")) {
+                new TeleportMenu(e.getPlayer(), "bw");
+                return;
+            }
+            if (armorStand.getScoreboardTags().contains("bb")) {
+                new TeleportMenu(e.getPlayer(), "bb");
+                return;
+            }
+        }
     }
 
     @EventHandler
@@ -95,4 +124,22 @@ public final class Lobby extends JavaPlugin implements Listener {
             }
         }
     }
+    private static class TeleportMenu extends InventoryMenu {
+        protected TeleportMenu(Player p, String mg) {
+            super("Телепорт", 3, true);
+
+            setItem(12, ItemUtil.generate(Material.BARRIER, 1, "&eАрена 1", "&7Нажмите чтобы перейти на арену"), _p -> {
+                p.closeInventory();
+                BungeeUtils.sendPlayerToServer(p, mg+"1");
+            });
+
+            setItem(14, ItemUtil.generate(Material.BARRIER, 1, "&eАрена 2", "&7Нажмите чтобы перейти на арену"), _p -> {
+                p.closeInventory();
+                BungeeUtils.sendPlayerToServer(p, mg+"2");
+            });
+
+            open(p);
+        }
+    }
+
 }

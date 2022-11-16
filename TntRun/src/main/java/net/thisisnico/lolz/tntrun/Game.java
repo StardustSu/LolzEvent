@@ -92,6 +92,7 @@ public class Game {
             player.setFlying(false);
             player.setHealth(20d);
             player.setFoodLevel(20);
+            player.getInventory().clear();
             player.getInventory().addItem(boost.getItemStack());
         }
 
@@ -177,7 +178,10 @@ public class Game {
             player.setAllowFlight(true);
             player.setFlying(true);
             player.teleport(spawn);
-            player.getInventory().remove(Material.FEATHER);
+            player.getInventory().clear();
+            if (tournamentMode && player.isOp()) {
+                player.getInventory().addItem(Game.getItem().getItemStack());
+            }
         }
     }
 

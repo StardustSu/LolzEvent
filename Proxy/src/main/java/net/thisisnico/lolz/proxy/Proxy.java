@@ -221,9 +221,16 @@ public class Proxy {
 
         for (String banword : banwords) {
             if (banword == null) continue;
-
-            if (check.contains(banword.toLowerCase())) {
-                message = "I'm so fancy you wouldn't even believe it. love you <3";
+            var b1 = banword.toLowerCase()
+                    .replaceAll("a", "а")
+                    .replaceAll("o", "о")
+                    .replaceAll("c", "с")
+                    .replaceAll("p", "р")
+                    .replaceAll("e", "е")
+                    .replaceAll("x", "х")
+                    .replaceAll("ь", "b");
+            if (check.contains(b1)) {
+                message = "lolz.guru - лучший форум";
                 break;
             }
         }

@@ -1,6 +1,5 @@
 package net.thisisnico.lolz.tntrun.listeners;
 
-import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import net.thisisnico.lolz.tntrun.Game;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,7 @@ public class StreamHandler implements Listener {
             e.getPlayer().setGameMode(GameMode.SPECTATOR);
         }
 
-        if (DatabaseAdapter.getUser(e.getPlayer()).isAdmin()) {
+        if (Game.isTournamentMode() && e.getPlayer().isOp()) {
             e.getPlayer().getInventory().addItem(Game.getItem().getItemStack());
         }
 
