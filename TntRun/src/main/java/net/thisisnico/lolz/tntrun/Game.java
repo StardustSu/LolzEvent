@@ -50,7 +50,7 @@ public class Game {
     private static BukkitTask task;
 
     @Getter
-    private static final boolean tournamentMode = true;
+    private static boolean tournamentMode = true;
 
     public static void init() {
         world = Bukkit.getWorlds().get(0);
@@ -72,6 +72,9 @@ public class Game {
             utils.setLine(4, "&fДвойных прыжков: &a" + players.get(utils.getPlayer())
                     .updateAndGet(i -> Math.max(i, 0)));
         });
+
+        BukkitUtils.getPlugin().saveDefaultConfig();
+        tournamentMode = BukkitUtils.getPlugin().getConfig().getBoolean("tournament-mode", false);
     }
 
     public static void start() {
@@ -183,6 +186,13 @@ public class Game {
                 player.getInventory().addItem(Game.getItem().getItemStack());
             }
         }
+
+        Bukkit.getScheduler().runTaskLater(BukkitUtils.getPlugin(), () -> {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.isOp()) continue;
+                onlinePlayer.kick(Component.color("&cИгра окончена"));
+            }
+        }, 20L * 5);
     }
 
     public static boolean isPlayer(Player p) {

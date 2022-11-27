@@ -3,6 +3,7 @@ package net.thisisnico.lolz.bedwars.listeners;
 import net.thisisnico.lolz.bedwars.Game;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -51,11 +52,12 @@ public class StartHandler implements Listener {
 
         playersCount++;
 
+        // broadcast
+        Bukkit.broadcast(Component.color("§aИгрок §f" + e.getPlayer().getName() + " §aприсоединился к игре! ("+playersCount+"/"+MAX_PLAYERS+")"));
+
         if (playersCount >= MIN_PLAYERS) {
             startCountdown();
         }
-
-        e.getPlayer().sendMessage("§aВы присоеденились к игре! §7(" + playersCount + "/" + MAX_PLAYERS + ")");
     }
 
     @EventHandler
@@ -64,6 +66,9 @@ public class StartHandler implements Listener {
             return;
 
         playersCount--;
+
+        // broadcast
+        Bukkit.broadcast(Component.color("§cИгрок §f" + e.getPlayer().getName() + " §cпокинул игру! ("+playersCount+"/"+MAX_PLAYERS+")"));
 
         if (playersCount < MIN_PLAYERS) {
             COUNTDOWN.cancel();

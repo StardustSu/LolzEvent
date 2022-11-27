@@ -47,6 +47,7 @@ public class Proxy {
     @Getter
     private static Proxy instance;
 
+    @Getter
     private final Logger logger;
 
     @Getter
@@ -124,6 +125,8 @@ public class Proxy {
                 player.createConnectionRequest(server).fireAndForget();
             }
         });
+
+        Sync.startThread();
 
         logger.info("Started Points listener");
 
@@ -212,25 +215,28 @@ public class Proxy {
         var check = message
                 .replaceAll("\\s", "")
                 .replaceAll("a", "а")
-                .replaceAll("o", "о")
+                .replaceAll("о", "0")
+                .replaceAll("o", "0")
                 .replaceAll("c", "с")
                 .replaceAll("p", "р")
                 .replaceAll("e", "е")
                 .replaceAll("x", "х")
-                .replaceAll("ь", "b");
+                .replaceAll("ь", "b")
+                .replaceAll("[1-9]+", "");
 
         for (String banword : banwords) {
             if (banword == null) continue;
             var b1 = banword.toLowerCase()
                     .replaceAll("a", "а")
-                    .replaceAll("o", "о")
+                    .replaceAll("о", "0")
+                    .replaceAll("o", "0")
                     .replaceAll("c", "с")
                     .replaceAll("p", "р")
                     .replaceAll("e", "е")
                     .replaceAll("x", "х")
                     .replaceAll("ь", "b");
             if (check.contains(b1)) {
-                message = "lolz.guru - лучший форум";
+                message = "Нико - лучший программист на этой планете!";
                 break;
             }
         }
@@ -244,7 +250,7 @@ public class Proxy {
             e.getPlayer().disconnect(Component.text("У вас нет доступа на ивент!").color(NamedTextColor.RED));
         }
 
-        e.getPlayer().sendPlayerListHeaderAndFooter(Component.text("§f§lСка§1§lмим§c§l.РФ"),
+        e.getPlayer().sendPlayerListHeaderAndFooter(Component.text("§f§lКлан§1§lовый §c§lивент"),
                 Component.text("§fСоздано при поддержке §alolz.guru"));
     }
 

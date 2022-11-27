@@ -45,7 +45,7 @@ public class Game {
     private static boolean isRunning = false;
 
     @Getter
-    private static final boolean tournamentMode = true;
+    private static boolean tournamentMode = true;
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isRunning() {
@@ -113,6 +113,9 @@ public class Game {
 
     public static void init() {
         arena = new Arena(BukkitUtils.getPlugin().getServer().getWorlds().get(0));
+
+        BukkitUtils.getPlugin().saveDefaultConfig();
+        tournamentMode = BukkitUtils.getPlugin().getConfig().getBoolean("tournament-mode", false);
     }
 
     public static void startTimer() {

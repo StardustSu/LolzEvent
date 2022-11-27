@@ -6,7 +6,6 @@ import net.thisisnico.lolz.tntrun.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,19 +25,24 @@ public class GameListener implements Listener {
             if (Game.isSuppress()) return;
             if (Game.isSpectator(player)) continue;
 
-            if (!player.getAllowFlight() && !player.getLocation().clone().add(0,-1,0).getBlock().getType().isAir()) {
-                player.setAllowFlight(true);
-            } else if (player.isFlying()) {
-                if (Game.isSuppress()) {
-                    player.setAllowFlight(false);
-                    return;
-                }
-                if (Game.getPlayers().get(player).decrementAndGet() <= 0) continue;
-                player.setFlying(false);
+            if (player.getAllowFlight()) {
                 player.setAllowFlight(false);
-                player.setVelocity(player.getVelocity().multiply(1.4).setY(.8));
-                player.playSound(player, Sound.ENTITY_BLAZE_SHOOT, 1f, 1f);
+                player.setFlying(false);
             }
+//            if (!player.getAllowFlight() && !player.getLocation().clone().add(0,-1,0).getBlock().getType().isAir()) {
+//                player.setAllowFlight(true);
+//                player.setFlying(false);
+//            } else if (player.isFlying()) {
+//                if (Game.isSuppress()) {
+//                    player.setAllowFlight(false);
+//                    return;
+//                }
+//                if (Game.getPlayers().get(player).decrementAndGet() <= 0) continue;
+//                player.setFlying(false);
+//                player.setAllowFlight(false);
+//                player.setVelocity(player.getVelocity().multiply(1.4).setY(.8));
+//                player.playSound(player, Sound.ENTITY_BLAZE_SHOOT, 1f, 1f);
+//            }
 
             var block = player.getLocation().getBlock();
             if (block.getType() == Material.WATER) {

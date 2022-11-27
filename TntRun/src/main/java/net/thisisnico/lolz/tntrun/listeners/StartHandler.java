@@ -3,6 +3,7 @@ package net.thisisnico.lolz.tntrun.listeners;
 import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.tntrun.Game;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -51,6 +52,9 @@ public class StartHandler implements Listener {
 
         playersCount++;
 
+        // broadcast
+        Bukkit.broadcast(Component.color("§aИгрок §f" + e.getPlayer().getName() + " §aприсоединился к игре! ("+playersCount+"/"+MAX_PLAYERS+")"));
+
         if (playersCount >= MIN_PLAYERS) {
             startCountdown();
         }
@@ -62,6 +66,9 @@ public class StartHandler implements Listener {
             return;
 
         playersCount--;
+
+        // broadcast
+        Bukkit.broadcast(Component.color("§cИгрок §f" + e.getPlayer().getName() + " §cпокинул игру! ("+playersCount+"/"+MAX_PLAYERS+")"));
 
         if (playersCount < MIN_PLAYERS) {
             COUNTDOWN.cancel();

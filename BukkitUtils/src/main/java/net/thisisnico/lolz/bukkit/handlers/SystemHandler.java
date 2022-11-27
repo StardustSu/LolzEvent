@@ -14,6 +14,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class SystemHandler implements Listener {
 
@@ -24,6 +26,8 @@ public class SystemHandler implements Listener {
         if (DatabaseAdapter.getUser(e.getPlayer()).isAdmin()) {
             e.getPlayer().setOp(true);
         }
+
+        e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 1, false, false, false));
     }
 
     @EventHandler

@@ -2,6 +2,7 @@ package net.thisisnico.lolz.buildbattle;
 
 import lombok.Getter;
 import net.kyori.adventure.title.Title;
+import net.thisisnico.lolz.bukkit.BukkitUtils;
 import net.thisisnico.lolz.bukkit.utils.ClickableItem;
 import net.thisisnico.lolz.bukkit.utils.Component;
 import net.thisisnico.lolz.bukkit.utils.ItemUtil;
@@ -35,7 +36,7 @@ public class Game {
     private static String theme;
 
     @Getter
-    private static final boolean tournamentMode = true;
+    private static boolean tournamentMode = true;
 
     @Getter
     private static BossBar bar;
@@ -69,6 +70,9 @@ public class Game {
         spawn = world.getSpawnLocation();
         bar = Bukkit.createBossBar("Build Battle", BarColor.BLUE, BarStyle.SOLID);
         bar.setProgress(.0f);
+
+        BukkitUtils.getPlugin().saveDefaultConfig();
+        tournamentMode = BukkitUtils.getPlugin().getConfig().getBoolean("tournament-mode", false);
     }
 
     public static void start() {
@@ -112,12 +116,13 @@ public class Game {
                         tournamentMode ? user.getClan() : player.getName(),
                         location.clone(), player.getName());
                 plots.add(plot);
+                player.teleport(location);
             } else {
                 plot.getOwners().add(player.getName());
+                player.teleport(plot.getLocation());
             }
 
             players.add(player.getName());
-            player.teleport(location);
             locations.add(location.clone());
             player.setGameMode(GameMode.CREATIVE);
             player.setAllowFlight(true);
@@ -281,6 +286,7 @@ public class Game {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.setAllowFlight(false);
                 player.setFlying(false);
+                player.kick(Component.color("&cИгра окончена!"));
             }
         }, DELAY);
 

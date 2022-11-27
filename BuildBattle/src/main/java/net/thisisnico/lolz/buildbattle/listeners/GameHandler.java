@@ -3,6 +3,7 @@ package net.thisisnico.lolz.buildbattle.listeners;
 import net.thisisnico.lolz.buildbattle.Game;
 import net.thisisnico.lolz.buildbattle.GameState;
 import net.thisisnico.lolz.buildbattle.Plot;
+import net.thisisnico.lolz.bukkit.utils.ScoreboardUtils;
 import net.thisisnico.lolz.common.adapters.DatabaseAdapter;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -11,7 +12,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -20,6 +23,7 @@ public class GameHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     void onJoin(PlayerJoinEvent e) {
+        ScoreboardUtils.get(e.getPlayer()).getSidebar().setDisplaySlot(null);
         e.getPlayer().getInventory().clear();
         e.getPlayer().setGameMode(GameMode.SURVIVAL);
         if (Game.isStarted()) {
@@ -30,6 +34,9 @@ public class GameHandler implements Listener {
             else{
                 e.getPlayer().setGameMode(GameMode.CREATIVE);
             }
+        } else {
+            e.getPlayer().setGameMode(GameMode.ADVENTURE);
+            e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation());
         }
 
         if (Game.isTournamentMode() && e.getPlayer().isOp()) {
@@ -59,6 +66,17 @@ public class GameHandler implements Listener {
     @EventHandler(ignoreCancelled = true)
     void onPlayerPlace(BlockPlaceEvent e) {
         e.setCancelled(check(e.getPlayer(), e.getBlockPlaced().getLocation(), true));
+    }
+
+    @EventHandler
+    void onTnt(BlockExplodeEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    void onTnt(EntityExplodeEvent e) {
+        e.blockList().clear();
+        e.setYield(.0f);
     }
 
     boolean check(Player player, Location to, boolean isBlockCheck) {
