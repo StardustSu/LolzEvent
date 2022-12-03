@@ -24,6 +24,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.thisisnico.lolz.common.network.Sync;
 import net.thisisnico.lolz.proxy.commands.ClanCommand;
+import net.thisisnico.lolz.proxy.commands.TopCommand;
 import net.thisisnico.lolz.proxy.commands.WhitelistCommand;
 import org.slf4j.Logger;
 
@@ -132,6 +133,7 @@ public class Proxy {
 
         annotationParser.parse(new ClanCommand());
         annotationParser.parse(new WhitelistCommand());
+        annotationParser.parse(new TopCommand());
 
         try {
             var file = new File(dataDirectory.toFile(), "_banlist.txt");
@@ -236,7 +238,7 @@ public class Proxy {
                     .replaceAll("x", "х")
                     .replaceAll("ь", "b");
             if (check.contains(b1)) {
-                message = "Нико - лучший программист на этой планете!";
+                message = "Stardust On Top BABYYYYYYYY";
                 break;
             }
         }
@@ -250,7 +252,7 @@ public class Proxy {
             e.getPlayer().disconnect(Component.text("У вас нет доступа на ивент!").color(NamedTextColor.RED));
         }
 
-        e.getPlayer().sendPlayerListHeaderAndFooter(Component.text("§f§lКлан§1§lовый §c§lивент"),
+        e.getPlayer().sendPlayerListHeaderAndFooter(Component.text("§a§lКлановый ивент"),
                 Component.text("§fСоздано при поддержке §alolz.guru"));
     }
 

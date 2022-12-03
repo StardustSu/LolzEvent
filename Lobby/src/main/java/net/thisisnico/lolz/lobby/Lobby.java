@@ -31,7 +31,7 @@ public final class Lobby extends JavaPlugin implements Listener {
 
         ScoreboardUtils.registerUpdater(sb -> {
             var clan = DatabaseAdapter.getClan(sb.getPlayer());
-            sb.getSidebar().displayName(Component.color("&f&lСка&1&lмим&c&l.РФ"));
+            sb.getSidebar().displayName(Component.color("&a&lИвент"));
             sb.setLine(1, "&1");
             sb.setLine(2, "&fИгроков: &e&l" + getServer().getOnlinePlayers().size());
             sb.setLine(3, "&3");

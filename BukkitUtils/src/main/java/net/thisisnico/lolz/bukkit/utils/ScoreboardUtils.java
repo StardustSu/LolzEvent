@@ -61,7 +61,7 @@ public class ScoreboardUtils {
 
         setLine(1, "&0");
         setLine(8, "&fПри поддержке");
-        setLine(9, "&alolz.guru &f| &eскамим.рф");
+        setLine(9, "&alolz.guru");
     }
 
     public void setLine(int line, String text) {
