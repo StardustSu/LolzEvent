@@ -302,11 +302,11 @@ public class ShopMenu extends InventoryMenu {
     private void showBlockMenu() {
         addCategoriesItems();
 
-        setItem(9, ItemUtil.generate(Material.SANDSTONE, 16, "§aПесчаник", "Цена: 8 Бронзы"), _p -> {
-            if (hasEnough(_p, COPPER, 8)) {
+        setItem(9, ItemUtil.generate(Material.SANDSTONE, 8, "§aПесчаник", "Цена: 4 Бронзы"), _p -> {
+            if (hasEnough(_p, COPPER, 4)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
-                removeItems(_p, COPPER, 8);
-                _p.getInventory().addItem(ItemUtil.generate(Material.SANDSTONE, 16, "§aПесчаник"));
+                removeItems(_p, COPPER, 4);
+                _p.getInventory().addItem(ItemUtil.generate(Material.SANDSTONE, 8, "§aПесчаник"));
             }
         });
 
