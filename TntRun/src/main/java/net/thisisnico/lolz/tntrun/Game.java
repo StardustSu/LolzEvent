@@ -116,11 +116,16 @@ public class Game {
 
                 if (tournamentMode) {
                     for (Player player : players.keySet()) {
-                        DatabaseAdapter.getClan(player).givePoints(5);
+                         DatabaseAdapter.getClan(player).givePoints(5);
+//                        player.sendMessage(Component.color("Здесь должно было быть +5 поинтов, " +
+//                                "но долбоеб на заказчике сказал убрать чтобы убрать \"дизбаланс\", " +
+//                                "но он не понимает, что создает дизбаланс как раз убирая это, " +
+//                                "потому что это наоборот добавляло баланса и шансов " +
+//                                "победить."));
                     }
                 }
             }
-        }.runTaskTimer(BukkitUtils.getPlugin(), 0, 15 * 20L);
+        }.runTaskTimer(BukkitUtils.getPlugin(), 15 * 20L, 15 * 20L);
     }
 
     public static void eliminate(Player p) {

@@ -119,15 +119,13 @@ public class Proxy {
                 return;
             }
 
-            // teleport *count* random players to admin's server
+            // teleport *count* random players to the admin's server
             var server = admin.getCurrentServer().orElseThrow().getServer();
             for (int i = 0; i < count; i++) {
                 var player = players.remove((int) (Math.random() * players.size()));
                 player.createConnectionRequest(server).fireAndForget();
             }
         });
-
-        Sync.startThread();
 
         logger.info("Started Points listener");
 
@@ -253,7 +251,7 @@ public class Proxy {
         }
 
         e.getPlayer().sendPlayerListHeaderAndFooter(Component.text("§a§lКлановый ивент"),
-                Component.text("§fСоздано при поддержке §alolz.guru"));
+                Component.text("§fСоздано при поддержке §azelenka.guru"));
     }
 
     private void registerCommandManager() {

@@ -10,6 +10,7 @@ import java.util.function.BiConsumer;
 public class Sync {
 
     private static final Jedis redis = new Jedis("localhost", 6379, 0);
+    private static final Jedis redis2 = new Jedis("localhost", 6379, 0);
 
     // ArrayList of BiConsumer<Clan, Integer>
     private static final ArrayList<BiConsumer<Clan, Integer>> points = new ArrayList<>();
@@ -44,17 +45,17 @@ public class Sync {
     }
 
     public static void registerPointsUpdateAsync(BiConsumer<Clan, Integer> callback) {
-        points.add(callback);
+        new Thread(() -> registerPointsUpdate(callback)).start();
     }
 
     public static void registerClanRequest(BiConsumer<String, Clan> callback) {
-        redis.subscribe(new JedisPubSub() {
+        redis2.subscribe(new JedisPubSub() {
             @Override
             public void onMessage(String channel, String message) {
                 System.out.println("Received WARP: " + message);
 
                 var s = message.split(":");
-                var adminAndCount = s[0]+":"+s[1];
+                var adminAndCount = s[0] + ":" + s[1];
                 var tag = s[2];
                 var clan = Clan.get(tag);
                 callback.accept(adminAndCount, clan);
@@ -63,28 +64,8 @@ public class Sync {
         }, "lolz:send");
     }
 
-    public static void startThread() {
-        if (thread == null) {
-            thread = new Thread(Sync::use);
-            thread.start();
-        }
-    }
-
     public static void registerClanRequestAsync(BiConsumer<String, Clan> callback) {
-        clans.add(callback);
-    }
-
-    private static void use() {
-        registerPointsUpdate((clan, delta) -> {
-            for (BiConsumer<Clan, Integer> callback : points) {
-                callback.accept(clan, delta);
-            }
-        });
-        registerClanRequest((adminAndCount, clan) -> {
-            for (BiConsumer<String, Clan> callback : clans) {
-                callback.accept(adminAndCount, clan);
-            }
-        });
+        new Thread(() -> registerClanRequest(callback)).start();
     }
 
 }

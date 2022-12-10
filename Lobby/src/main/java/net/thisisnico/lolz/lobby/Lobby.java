@@ -43,13 +43,26 @@ public final class Lobby extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             for (var player : Bukkit.getOnlinePlayers()) {
                 var clan = DatabaseAdapter.getClan(player);
-                if (clan == null) continue;
+                if (clan == null) {
+                    if (DatabaseAdapter.getUser(player).isAdmin()) {
+                        for (var p1 : getServer().getOnlinePlayers()) {
+                            var sb = ScoreboardUtils.get(p1).getScoreboard();
+                            var team = sb.getTeam("admin");
+                            if (team == null) team = sb.registerNewTeam("admin");
+                            team.prefix(Component.color("&4&lA "));
+                            team.color(NamedTextColor.RED);
+                            team.addPlayer(player);
+                        }
+                    }
+                    continue;
+                }
 
                 for (var p1 : getServer().getOnlinePlayers()) {
                     var sb = ScoreboardUtils.get(p1).getScoreboard();
                     var team = sb.getTeam(clan.getTag());
                     if (team == null) team = sb.registerNewTeam(clan.getTag());
                     team.prefix(Component.color("&b["+clan.getTag()+"] "));
+                    team.addPlayer(player);
                 }
             }
         }, 0, 3*20);
@@ -106,7 +119,7 @@ public final class Lobby extends JavaPlugin implements Listener {
                     team.color(NamedTextColor.RED);
                 }
                 // add player to team
-                team.addEntry(e.getPlayer().getName());
+                team.addPlayer(e.getPlayer());
             }
         }
 
@@ -121,7 +134,7 @@ public final class Lobby extends JavaPlugin implements Listener {
                     team.prefix(Component.color("&b[" + clan.getTag() + "] "));
                 }
                 // add player to team
-                team.addEntry(e.getPlayer().getName());
+                team.addPlayer(e.getPlayer());
             }
         }
 
@@ -140,12 +153,9 @@ public final class Lobby extends JavaPlugin implements Listener {
             var sb = ScoreboardUtils.get(player).getScoreboard();
             // get team, if it doesn't exist create
             var team = sb.getTeam(clan.getTag());
-            if (team == null) {
-                team = sb.registerNewTeam(clan.getTag());
-                team.prefix(Component.color("&b["+clan.getTag()+"] "));
-            }
+            if (team == null) return;
             // remove player from team
-            team.removeEntry(e.getPlayer().getName());
+            team.removePlayer(e.getPlayer());
 
             // if team is empty, unregister
             if (team.getSize() == 0) {
